@@ -13,11 +13,13 @@ from __future__ import annotations
 
 import base64
 import hmac
+import html
 import io
 import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import quote, unquote
 
 import pandas as pd
 import streamlit as st
@@ -71,8 +73,9 @@ def inject_css() -> None:
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 :root {
   --bg-base:#0D0E12; --bg-surface:#111318; --bg-elevated:#16181D; --bg-panel:#1A1B22;
-  --border:#2D2E33; --border-soft:rgba(255,255,255,.08);
-  --text:#FAFAFA; --muted:#949494; --subtle:#6B7280; --disabled:#4B5563;
+  --border:#2D2E33; --border-soft:rgba(255,255,255,.10);
+  --text:#FAFAFA; --muted:#B8BBC2; --subtle:#9CA3AF; --disabled:#6B7280;
+  --radius-card:16px; --radius-control:10px;
   --cyan:#A5F3FC; --cyan-strong:#67E8F9; --purple:#C4B5FD;
   --green:#22C55E; --yellow:#EAB308; --red:#EF4444;
   --mono:'JetBrains Mono','SF Mono','Consolas',monospace;
@@ -86,17 +89,17 @@ section[data-testid="stSidebar"] { background:var(--bg-surface) !important; bord
 section[data-testid="stSidebar"] > div:first-child { padding:1.35rem 1.1rem !important; }
 hr { border-color:var(--border-soft) !important; }
 div[data-baseweb="input"] > div, div[data-baseweb="select"] > div:first-child {
-  background:var(--bg-elevated) !important; border:1px solid var(--border) !important; border-radius:10px !important;
+  background:var(--bg-elevated) !important; border:1px solid var(--border) !important; border-radius:var(--radius-control) !important;
 }
 div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; font-family:var(--mono) !important; }
 .stButton > button, .stDownloadButton > button {
   background:transparent !important; border:1px solid var(--border) !important; color:var(--muted) !important;
-  border-radius:10px !important; font-weight:400 !important; letter-spacing:.5px !important; transition:all .16s ease !important;
+  border-radius:var(--radius-control) !important; font-weight:400 !important; letter-spacing:.5px !important; transition:all .16s ease !important;
 }
 .stButton > button:hover, .stDownloadButton > button:hover { background:rgba(255,255,255,.04) !important; border-color:#3D3E44 !important; color:#E5E7EB !important; }
 .sb-label { display:block; color:var(--muted); font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin:.6rem 0 .35rem; }
 .sb-hint { color:var(--subtle); font-size:.72rem; line-height:1.55; margin:.35rem 0 .2rem; }
-.vc-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:14px 18px; margin-bottom:18px; background:rgba(17,19,24,.86); border:1px solid var(--border); border-radius:16px; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter:blur(10px); }
+.vc-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:14px 18px; margin-bottom:18px; background:rgba(17,19,24,.86); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter:blur(10px); }
 .vc-brand { display:flex; align-items:center; gap:12px; }
 .vc-logo { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; color:#fff; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 0 18px rgba(124,58,237,.35); }
 .vc-title { font-weight:700; letter-spacing:-.02em; }
@@ -108,7 +111,7 @@ div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; f
 .page-title { font-size:1.45rem; font-weight:750; letter-spacing:-.035em; margin:.3rem 0 .25rem; }
 .page-sub { color:var(--subtle); font-size:.86rem; margin-bottom:1rem; }
 .cat-card, .prod-card, .quote-card, .spec-strip, .tool-card {
-  background:rgba(22,24,29,.84); border:1px solid var(--border); border-radius:16px; box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 28px rgba(0,0,0,.28); backdrop-filter:blur(10px);
+  background:rgba(22,24,29,.84); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 28px rgba(0,0,0,.28); backdrop-filter:blur(10px);
 }
 .cat-card { min-height:150px; padding:22px; cursor:pointer; position:relative; transition:all .18s ease; }
 .cat-card:hover, .prod-card:hover { border-color:#3D3E44; transform:translateY(-1px); }
@@ -117,6 +120,8 @@ div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; f
 .cat-desc { color:var(--subtle); font-size:.82rem; line-height:1.65; }
 .cat-badge { display:inline-flex; margin-top:1rem; padding:3px 10px; border:1px solid rgba(165,243,252,.25); border-radius:999px; color:var(--cyan); font-size:.72rem; background:rgba(165,243,252,.08); }
 .prod-card { min-height:165px; padding:14px; cursor:pointer; text-align:center; transition:all .18s ease; overflow:hidden; }
+.prod-card-link { display:block; text-decoration:none !important; color:inherit !important; }
+.prod-card-link:hover { text-decoration:none !important; }
 .prod-card.selected { border:2px solid #7C3AED; box-shadow:0 0 0 1px rgba(124,58,237,.35),0 0 26px rgba(124,58,237,.20); }
 .prod-img { width:100%; height:95px; object-fit:contain; margin-bottom:10px; filter:drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
 .prod-placeholder { height:95px; display:flex; align-items:center; justify-content:center; color:#3F3F46; font-size:1.8rem; }
@@ -129,25 +134,27 @@ div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; f
 .sc-val { color:#fff; font-family:var(--mono) !important; font-weight:700; font-size:1.08rem; }
 .sc-sub { color:var(--disabled); font-size:.72rem; margin-top:3px; }
 .warn-bar { color:#FDE68A; background:rgba(234,179,8,.10); border:1px solid rgba(234,179,8,.22); border-radius:10px; padding:10px 12px; font-size:.78rem; margin-bottom:16px; }
-.quote-card { position:sticky; top:18px; padding:24px; background:rgba(26,27,34,.92); }
+.quote-card { padding:24px; background:rgba(26,27,34,.92); }
+.quote-column-marker { height:0; width:100%; }
+div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky; top:18px; align-self:flex-start; }
 .panel-kicker { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--subtle); font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px; }
 .panel-product { font-weight:800; font-size:1.05rem; padding-bottom:14px; border-bottom:1px solid var(--border-soft); margin-bottom:16px; }
-.price-hero { background:rgba(22,24,29,.85); border:1px solid rgba(255,255,255,.10); border-radius:16px; padding:20px; box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 20px rgba(0,0,0,.35); }
-.ph-row { display:flex; justify-content:space-between; align-items:baseline; }
-.ph-label { font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:700; }
-.ph-currency { color:#7A7A8A; font-size:.74rem; }
-.ph-amount { text-align:right; color:var(--cyan); font-family:var(--mono) !important; font-size:2.3rem; font-weight:800; letter-spacing:-.05em; line-height:1.05; text-shadow:0 0 20px rgba(165,243,252,.25); }
-.ph-rmb { text-align:right; color:var(--subtle); font-family:var(--mono) !important; font-size:.84rem; margin-top:4px; }
-.ph-sub { color:#52525B; font-size:.62rem; line-height:1.5; border-top:1px solid rgba(255,255,255,.05); margin-top:10px; padding-top:8px; }
+.price-hero { background:rgba(22,24,29,.85); border:1px solid rgba(255,255,255,.10); border-radius:var(--radius-card); padding:20px 20px 20px 15px; text-align:left; box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 20px rgba(0,0,0,.35); }
+.ph-row { display:flex; justify-content:flex-start; align-items:baseline; gap:12px; }
+.ph-label { text-align:left; font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:700; }
+.ph-currency { text-align:left; color:#A1A1AA; font-size:.74rem; }
+.ph-amount { text-align:left; padding-left:15px; color:var(--cyan); font-family:var(--mono) !important; font-size:2.3rem; font-weight:800; letter-spacing:-.05em; line-height:1.05; text-shadow:0 0 20px rgba(165,243,252,.25); }
+.ph-rmb { text-align:left; padding-left:15px; color:var(--subtle); font-family:var(--mono) !important; font-size:.84rem; margin-top:4px; }
+.ph-sub { text-align:left; padding-left:15px; color:#9CA3AF; font-size:.62rem; line-height:1.5; border-top:1px solid rgba(255,255,255,.05); margin-top:10px; padding-top:8px; }
 .metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; }
 .metric-tile { background:rgba(22,24,29,.85); border:1px solid var(--border-soft); border-radius:12px; padding:15px 14px; }
 .mt-label { color:var(--muted); font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
-.mt-val { font-family:var(--mono) !important; color:#fff; font-size:1.04rem; font-weight:800; text-align:right; }
+.mt-val { font-family:var(--mono) !important; color:#fff; font-size:1.04rem; font-weight:800; text-align:left; }
 .mt-sub { color:#7A7A8A; font-size:.6rem; }
-.order-total { background:rgba(26,26,40,.9); border:1px solid rgba(124,58,237,.35); border-radius:16px; padding:18px 20px; box-shadow:0 0 28px rgba(124,58,237,.15),inset 0 1px 0 rgba(255,255,255,.06); }
+.order-total { background:rgba(26,26,40,.9); border:1px solid rgba(124,58,237,.35); border-radius:var(--radius-card); padding:18px 20px; box-shadow:0 0 28px rgba(124,58,237,.15),inset 0 1px 0 rgba(255,255,255,.06); }
 .ot-label { color:#7A7A8A; font-size:.62rem; text-transform:uppercase; letter-spacing:.09em; font-weight:700; }
-.ot-val { color:var(--purple); font-family:var(--mono) !important; font-size:1.55rem; font-weight:800; text-align:right; text-shadow:0 0 16px rgba(196,181,253,.3); }
-.ot-sub { color:#7A7A8A; font-family:var(--mono) !important; font-size:.65rem; text-align:right; }
+.ot-val { color:var(--purple); font-family:var(--mono) !important; font-size:1.55rem; font-weight:800; text-align:left; text-shadow:0 0 16px rgba(196,181,253,.3); }
+.ot-sub { color:#A1A1AA; font-family:var(--mono) !important; font-size:.65rem; text-align:left; }
 .margin-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-soft); margin-bottom:12px; }
 .margin-label { color:#7A7A8A; font-size:.75rem; }
 .margin-pill { display:inline-flex; padding:4px 11px; border-radius:999px; font-size:.72rem; font-weight:800; font-family:var(--mono) !important; }
@@ -425,6 +432,28 @@ def init_session_state() -> None:
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
 
+def sync_selection_from_query(df: pd.DataFrame) -> None:
+    """把产品卡片链接写入的 URL 参数同步到会话状态。"""
+    params = st.query_params
+    raw_cat = params.get("cat")
+    raw_prod = params.get("prod")
+    if isinstance(raw_cat, list):
+        raw_cat = raw_cat[0] if raw_cat else None
+    if isinstance(raw_prod, list):
+        raw_prod = raw_prod[0] if raw_prod else None
+
+    valid_categories = set(df["系列"].dropna().astype(str))
+    valid_products = set(df["产品名称"].dropna().astype(str))
+
+    if raw_cat:
+        cat = unquote(str(raw_cat))
+        if cat in valid_categories:
+            st.session_state.selected_cat = cat
+    if raw_prod:
+        prod = unquote(str(raw_prod))
+        if prod in valid_products:
+            st.session_state.selected_prod = prod
+
 
 # ═══════════════════════════════════════════════════════════
 # UI 渲染层
@@ -608,17 +637,14 @@ def render_category_selector(df: pd.DataFrame) -> None:
 
 
 def render_product_grid(df: pd.DataFrame) -> None:
-    """按 Excel 行数动态循环生成产品卡片。"""
+    """按 Excel 行数动态循环生成产品卡片，整张卡片点击即可选中。"""
     selected_cat = st.session_state.selected_cat
     selected_prod = st.session_state.selected_prod
+    safe_cat_title = html.escape(str(selected_cat))
     st.markdown(
-        f'<div class="page-title">{selected_cat}系列</div><div class="page-sub">产品卡片按 products.xlsx 行动态生成。新增一行产品后，刷新页面即可自动显示。</div>',
+        f'<div class="page-title">{safe_cat_title}系列</div><div class="page-sub">点击任意产品卡片即可选中，报价结果会在右侧实时刷新。</div>',
         unsafe_allow_html=True,
     )
-    if st.button("← 返回所有系列", key="back_to_categories"):
-        st.session_state.selected_cat = None
-        st.session_state.selected_prod = None
-        st.rerun()
 
     cat_df = df[df["系列"] == selected_cat].reset_index(drop=True)
     columns_per_row = 5
@@ -626,24 +652,61 @@ def render_product_grid(df: pd.DataFrame) -> None:
         row_df = cat_df.iloc[start : start + columns_per_row]
         cols = st.columns(columns_per_row, gap="small")
         for offset, (_, product) in enumerate(row_df.iterrows()):
-            product_index = start + offset
             product_name = str(product["产品名称"])
             with cols[offset]:
                 image_b64 = find_product_image(product)
                 selected_class = "selected" if selected_prod == product_name else ""
-                image_html = f'<img class="prod-img" src="data:image/png;base64,{image_b64}" alt="{product_name}">' if image_b64 else '<div class="prod-placeholder">◇</div>'
+                safe_name = html.escape(product_name)
+                safe_href = f"?cat={quote(str(selected_cat), safe='')}&prod={quote(product_name, safe='')}#workbench"
+                image_html = f'<img class="prod-img" src="data:image/png;base64,{image_b64}" alt="{safe_name}">' if image_b64 else '<div class="prod-placeholder">◇</div>'
                 st.markdown(
                     f"""
-                    <div class="prod-card {selected_class}">
-                      {image_html}
-                      <div class="prod-name">{product_name}</div>
-                    </div>
+                    <a class="prod-card-link" href="{safe_href}" target="_self" aria-label="选择 {safe_name}">
+                      <div class="prod-card {selected_class}">
+                        {image_html}
+                        <div class="prod-name">{safe_name}</div>
+                      </div>
+                    </a>
                     """,
                     unsafe_allow_html=True,
                 )
-                if st.button("选择", key=f"product_{product_index}_{product_name}", use_container_width=True):
-                    st.session_state.selected_prod = product_name
-                    st.rerun()
+
+
+def render_series_navigation(df: pd.DataFrame) -> None:
+    """三段式布局左栏：只承担系列导航，不挤占产品网格。"""
+    st.markdown('<div class="page-title">系列导航</div><div class="page-sub">先选择系列，再在中间区域点击产品卡片。</div>', unsafe_allow_html=True)
+    categories = list(df["系列"].dropna().astype(str).unique())
+    if st.button("全部系列", key="nav_all_categories", use_container_width=True):
+        st.session_state.selected_cat = None
+        st.session_state.selected_prod = None
+        st.query_params.clear()
+        st.rerun()
+    for idx, category in enumerate(categories):
+        count = int((df["系列"] == category).sum())
+        label = f"{category}系列 · {count}款"
+        if st.button(label, key=f"nav_cat_{idx}_{category}", use_container_width=True):
+            st.session_state.selected_cat = category
+            st.session_state.selected_prod = None
+            st.query_params.clear()
+            st.query_params["cat"] = category
+            st.rerun()
+
+
+def render_product_empty_state(df: pd.DataFrame) -> None:
+    """三段式布局中栏：未选系列时的提示区。"""
+    category_count = df["系列"].nunique()
+    product_count = len(df)
+    st.markdown(
+        f"""
+        <div class="tool-card" style="min-height:360px;display:flex;align-items:center;justify-content:center;text-align:left;">
+          <div>
+            <div class="page-title">请选择左侧产品系列</div>
+            <div class="page-sub" style="max-width:520px;line-height:1.8;">当前数据库包含 {category_count} 个系列、{product_count} 款产品。选择系列后，中间区域会显示该系列产品卡片；点击任意卡片即可在右侧生成实时报价。</div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def render_product_specs(product: pd.Series) -> None:
@@ -688,23 +751,23 @@ def get_selected_product(df: pd.DataFrame) -> pd.Series | None:
 
 def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> None:
     """渲染右侧报价卡片。"""
-    st.markdown('<div class="quote-card">', unsafe_allow_html=True)
     if product is None:
         title = "开始报价" if st.session_state.selected_cat is None else "选择产品"
-        desc = "先选择产品系列，然后选择具体产品。" if st.session_state.selected_cat is None else "点击左侧任意产品卡片后，报价结果将在这里实时显示。"
+        desc = "先选择产品系列，然后选择具体产品。" if st.session_state.selected_cat is None else "点击中间任意产品卡片后，报价结果将在这里实时显示。"
         st.markdown(
             f"""
-            <div style="min-height:420px;display:flex;align-items:center;justify-content:center;text-align:center;">
-              <div>
-                <div style="font-size:2rem;color:#3F3F46;margin-bottom:1rem;">◇</div>
-                <div style="font-size:1rem;font-weight:800;color:#A1A1AA;margin-bottom:8px;">{title}</div>
-                <div style="font-size:.78rem;color:#52525B;line-height:1.6;">{desc}</div>
+            <div class="quote-card">
+              <div style="min-height:420px;display:flex;align-items:center;justify-content:center;text-align:center;">
+                <div>
+                  <div style="font-size:2rem;color:#6B7280;margin-bottom:1rem;">◇</div>
+                  <div style="font-size:1rem;font-weight:800;color:#D1D5DB;margin-bottom:8px;">{title}</div>
+                  <div style="font-size:.78rem;color:#9CA3AF;line-height:1.6;">{desc}</div>
+                </div>
               </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-        st.markdown('</div>', unsafe_allow_html=True)
         return
 
     quote = calculate_quote(
@@ -731,26 +794,29 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
     else:
         pill_class, arrow = "mp-danger", "↓"
 
+    safe_product_name = html.escape(str(product['产品名称']))
     st.markdown(
         f"""
-        <div class="panel-kicker"><span>实时报价</span><span><span class="dot dot-green"></span> 实时汇率已应用</span></div>
-        <div class="panel-product">{product['产品名称']}</div>
-        <div class="price-hero">
-          <div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{currency} / 只</div></div>
-          <div class="ph-amount">{symbol}{quote['fgn']:.4f}</div>
-          <div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div>
-          <div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']} · 含 2% 安全边际</div>
+        <div class="quote-card">
+          <div class="panel-kicker"><span>实时报价</span><span><span class="dot dot-green"></span> 实时汇率已应用</span></div>
+          <div class="panel-product">{safe_product_name}</div>
+          <div class="price-hero">
+            <div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{currency} / 只</div></div>
+            <div class="ph-amount">{symbol}{quote['fgn']:.4f}</div>
+            <div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div>
+            <div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']} · 含 2% 安全边际</div>
+          </div>
+          <div class="metric-grid">
+            <div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div>
+            <div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div>
+          </div>
+          <div class="order-total">
+            <div class="ph-row"><div class="ot-label">订单总价</div><div style="color:#9CA3AF;font-size:.62rem;font-family:JetBrains Mono,monospace;">{int(st.session_state.quantity):,} 只</div></div>
+            <div class="ot-val">{symbol}{quote['total']:,.2f}</div>
+            <div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity):,} {currency}</div>
+          </div>
+          <div class="margin-row"><span class="margin-label">利润率</span><span class="margin-pill {pill_class}">{arrow} {margin}%</span></div>
         </div>
-        <div class="metric-grid">
-          <div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div>
-          <div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div>
-        </div>
-        <div class="order-total">
-          <div class="ph-row"><div class="ot-label">订单总价</div><div style="color:#4B5563;font-size:.62rem;font-family:JetBrains Mono,monospace;">{int(st.session_state.quantity):,} 只</div></div>
-          <div class="ot-val">{symbol}{quote['total']:,.2f}</div>
-          <div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity):,} {currency}</div>
-        </div>
-        <div class="margin-row"><span class="margin-label">利润率</span><span class="margin-pill {pill_class}">{arrow} {margin}%</span></div>
         """,
         unsafe_allow_html=True,
     )
@@ -782,15 +848,17 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
         )
         st.markdown(f"<div class='formula'>{formula}</div>", unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> None:
-    """渲染主工作台：左侧选择区 + 右侧报价区。"""
-    left, right = st.columns([1.0, 0.38], gap="large")
-    with left:
+    """渲染主工作台：左侧系列导航 + 中间产品区 + 右侧粘性报价区。"""
+    st.markdown('<div id="workbench"></div>', unsafe_allow_html=True)
+    col_left, col_mid, col_right = st.columns([1, 2.5, 1.2], gap="large")
+    with col_left:
+        render_series_navigation(df)
+    with col_mid:
         if st.session_state.selected_cat is None:
-            render_category_selector(df)
+            render_product_empty_state(df)
         else:
             render_product_grid(df)
             selected = get_selected_product(df)
@@ -798,7 +866,8 @@ def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> None:
                 st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
                 render_product_specs(selected)
                 render_quote_controls()
-    with right:
+    with col_right:
+        st.markdown('<div class="quote-column-marker"></div>', unsafe_allow_html=True)
         render_quote_panel(get_selected_product(df), params)
 
 
@@ -911,6 +980,7 @@ def main() -> None:
         st.error(f"产品数据库加载失败：{exc}")
         st.stop()
 
+    sync_selection_from_query(products_df)
     render_header(products_df, params)
     render_workbench(products_df, params)
     render_bottom_tools(products_df, params)
