@@ -71,6 +71,7 @@ def inject_css() -> None:
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block');
 :root {
   --bg-base:#0D0E12; --bg-surface:#111318; --bg-elevated:#16181D; --bg-panel:#1A1B22;
   --border:#2D2E33; --border-soft:rgba(255,255,255,.10);
@@ -82,11 +83,24 @@ def inject_css() -> None:
   --font:'Inter',-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;
 }
 *, *::before, *::after { font-family:var(--font) !important; box-sizing:border-box; }
+span[data-testid="stIconMaterial"], span[translate="no"], span[class*="material"], i[class*="material"], .material-icons, .material-symbols-rounded, .material-symbols-outlined {
+  font-family:'Material Symbols Rounded','Material Symbols Outlined','Material Icons' !important;
+  font-weight:normal !important; font-style:normal !important; font-size:1.1em !important; line-height:1 !important;
+  letter-spacing:normal !important; text-transform:none !important; white-space:nowrap !important; word-wrap:normal !important; direction:ltr !important;
+  -webkit-font-feature-settings:'liga' !important; -webkit-font-smoothing:antialiased !important; font-feature-settings:'liga' !important;
+}
 .stApp { background:var(--bg-base) !important; color:var(--text) !important; }
 #MainMenu, footer, header[data-testid="stHeader"], .stDeployButton, [data-testid="stToolbar"] { display:none !important; }
-.main .block-container { max-width:1440px !important; padding:1.1rem 1.6rem 2rem !important; }
-section[data-testid="stSidebar"] { background:var(--bg-surface) !important; border-right:1px solid var(--border) !important; }
+.main .block-container { max-width:none !important; padding:1.05rem 338px 2rem 1.55rem !important; }
+section[data-testid="stSidebar"] { background:var(--bg-surface) !important; border-right:1px solid var(--border) !important; width:244px !important; min-width:244px !important; }
 section[data-testid="stSidebar"] > div:first-child { padding:1.35rem 1.1rem !important; }
+.quote-rail { position:fixed; right:0; top:38px; bottom:0; width:318px; padding:16px 14px 18px; background:rgba(26,27,34,.96); border-left:1px solid var(--border); z-index:5; overflow-y:auto; box-shadow:-18px 0 40px rgba(0,0,0,.28); }
+.quote-rail details { margin-top:8px; background:transparent; border:0; color:#E5E7EB; }
+.quote-rail summary { cursor:pointer; list-style:none; color:#E5E7EB; font-size:.86rem; font-weight:800; padding:3px 0; }
+.quote-rail summary::-webkit-details-marker { display:none; }
+.quote-rail summary::before { content:'▶'; display:inline-block; margin-right:8px; color:#FAFAFA; font-size:.68rem; transform:translateY(-1px); }
+.quote-rail details[open] summary::before { content:'▼'; }
+.quote-empty { min-height:420px; display:flex; align-items:center; justify-content:center; text-align:center; }
 hr { border-color:var(--border-soft) !important; }
 div[data-baseweb="input"] > div, div[data-baseweb="select"] > div:first-child {
   background:var(--bg-elevated) !important; border:1px solid var(--border) !important; border-radius:var(--radius-control) !important;
@@ -99,17 +113,17 @@ div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; f
 .stButton > button:hover, .stDownloadButton > button:hover { background:rgba(255,255,255,.04) !important; border-color:#3D3E44 !important; color:#E5E7EB !important; }
 .sb-label { display:block; color:var(--muted); font-size:.72rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin:.6rem 0 .35rem; }
 .sb-hint { color:var(--subtle); font-size:.72rem; line-height:1.55; margin:.35rem 0 .2rem; }
-.vc-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:14px 18px; margin-bottom:18px; background:rgba(17,19,24,.86); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter:blur(10px); }
+.vc-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:10px 18px; margin:-1px -2px 86px; background:rgba(17,19,24,.86); border-bottom:1px solid var(--border); border-radius:0; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter:blur(10px); }
 .vc-brand { display:flex; align-items:center; gap:12px; }
 .vc-logo { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; color:#fff; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 0 18px rgba(124,58,237,.35); }
 .vc-title { font-weight:700; letter-spacing:-.02em; }
 .vc-subtitle { color:var(--subtle); font-size:.74rem; margin-top:2px; }
 .status-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-.status-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; color:#D1D5DB; background:rgba(22,24,29,.78); font-size:.72rem; }
+.status-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--border); border-radius:999px; color:#D1D5DB; background:rgba(22,24,29,.78); font-size:.70rem; }
 .dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
 .dot-green { background:var(--green); box-shadow:0 0 8px rgba(34,197,94,.55); } .dot-yellow { background:var(--yellow); box-shadow:0 0 8px rgba(234,179,8,.35); }
-.page-title { font-size:1.45rem; font-weight:750; letter-spacing:-.035em; margin:.3rem 0 .25rem; }
-.page-sub { color:var(--subtle); font-size:.86rem; margin-bottom:1rem; }
+.page-title { font-size:1.05rem; font-weight:800; letter-spacing:-.025em; margin:.15rem 0 .55rem; }
+.page-sub { color:var(--subtle); font-size:.78rem; margin-bottom:.8rem; }
 .cat-card, .prod-card, .quote-card, .spec-strip, .tool-card {
   background:rgba(22,24,29,.84); border:1px solid var(--border); border-radius:var(--radius-card); box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 28px rgba(0,0,0,.28); backdrop-filter:blur(10px);
 }
@@ -119,13 +133,13 @@ div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; f
 .cat-title { font-size:1.08rem; font-weight:700; margin-bottom:.4rem; }
 .cat-desc { color:var(--subtle); font-size:.82rem; line-height:1.65; }
 .cat-badge { display:inline-flex; margin-top:1rem; padding:3px 10px; border:1px solid rgba(165,243,252,.25); border-radius:999px; color:var(--cyan); font-size:.72rem; background:rgba(165,243,252,.08); }
-.prod-card { min-height:165px; padding:14px; cursor:pointer; text-align:center; transition:all .18s ease; overflow:hidden; }
+.prod-card { height:156px; padding:12px; cursor:pointer; text-align:center; transition:all .18s ease; overflow:hidden; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .prod-card-link { display:block; text-decoration:none !important; color:inherit !important; }
 .prod-card-link:hover { text-decoration:none !important; }
 .prod-card.selected { border:2px solid #7C3AED; box-shadow:0 0 0 1px rgba(124,58,237,.35),0 0 26px rgba(124,58,237,.20); }
-.prod-img { width:100%; height:95px; object-fit:contain; margin-bottom:10px; filter:drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
-.prod-placeholder { height:95px; display:flex; align-items:center; justify-content:center; color:#3F3F46; font-size:1.8rem; }
-.prod-name { color:#E5E7EB; font-size:.82rem; font-weight:600; line-height:1.35; }
+.prod-img { width:100%; height:112px; object-fit:contain; margin-bottom:8px; filter:drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
+.prod-placeholder { height:112px; display:flex; align-items:center; justify-content:center; color:#3F3F46; font-size:1.45rem; }
+.prod-name { color:#E5E7EB; font-size:.72rem; font-weight:700; line-height:1.25; position:absolute; left:0; right:0; bottom:0; padding:6px 8px; background:linear-gradient(180deg,rgba(17,19,24,0),rgba(17,19,24,.92)); }
 .hidden-button-row .stButton { height:0 !important; overflow:hidden !important; }
 .spec-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:0; overflow:hidden; margin:12px 0 18px; }
 .spec-cell { padding:15px 18px; border-right:1px solid var(--border-soft); }
@@ -134,26 +148,26 @@ div[data-baseweb="input"] input, .stNumberInput input { color:#fff !important; f
 .sc-val { color:#fff; font-family:var(--mono) !important; font-weight:700; font-size:1.08rem; }
 .sc-sub { color:var(--disabled); font-size:.72rem; margin-top:3px; }
 .warn-bar { color:#FDE68A; background:rgba(234,179,8,.10); border:1px solid rgba(234,179,8,.22); border-radius:10px; padding:10px 12px; font-size:.78rem; margin-bottom:16px; }
-.quote-card { padding:24px; background:rgba(26,27,34,.92); }
+.quote-card { padding:0; background:transparent; border:0; box-shadow:none; }
 .quote-column-marker { height:0; width:100%; }
 div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky; top:18px; align-self:flex-start; }
 .panel-kicker { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--subtle); font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px; }
-.panel-product { font-weight:800; font-size:1.05rem; padding-bottom:14px; border-bottom:1px solid var(--border-soft); margin-bottom:16px; }
-.price-hero { background:rgba(22,24,29,.85); border:1px solid rgba(255,255,255,.10); border-radius:var(--radius-card); padding:20px 20px 20px 15px; text-align:left; box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 20px rgba(0,0,0,.35); }
+.panel-product { font-weight:800; font-size:1.05rem; padding-bottom:10px; margin-bottom:0; color:#F4F4F5; }
+.price-hero { background:linear-gradient(100deg,rgba(22,24,29,.95),rgba(31,32,46,.96)); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius-card); padding:18px 18px 18px 15px; text-align:left; box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 20px rgba(0,0,0,.35); }
 .ph-row { display:flex; justify-content:flex-start; align-items:baseline; gap:12px; }
 .ph-label { text-align:left; font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:700; }
 .ph-currency { text-align:left; color:#A1A1AA; font-size:.74rem; }
-.ph-amount { text-align:left; padding-left:15px; color:var(--cyan); font-family:var(--mono) !important; font-size:2.3rem; font-weight:800; letter-spacing:-.05em; line-height:1.05; text-shadow:0 0 20px rgba(165,243,252,.25); }
+.ph-amount { text-align:left; padding-left:15px; color:#FAFAFA; font-family:var(--mono) !important; font-size:2.15rem; font-weight:800; letter-spacing:-.05em; line-height:1.05; text-shadow:0 0 20px rgba(165,243,252,.18); }
 .ph-rmb { text-align:left; padding-left:15px; color:var(--subtle); font-family:var(--mono) !important; font-size:.84rem; margin-top:4px; }
 .ph-sub { text-align:left; padding-left:15px; color:#9CA3AF; font-size:.62rem; line-height:1.5; border-top:1px solid rgba(255,255,255,.05); margin-top:10px; padding-top:8px; }
-.metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; }
+.metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0; }
 .metric-tile { background:rgba(22,24,29,.85); border:1px solid var(--border-soft); border-radius:12px; padding:15px 14px; }
 .mt-label { color:var(--muted); font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
 .mt-val { font-family:var(--mono) !important; color:#fff; font-size:1.04rem; font-weight:800; text-align:left; }
 .mt-sub { color:#7A7A8A; font-size:.6rem; }
-.order-total { background:rgba(26,26,40,.9); border:1px solid rgba(124,58,237,.35); border-radius:var(--radius-card); padding:18px 20px; box-shadow:0 0 28px rgba(124,58,237,.15),inset 0 1px 0 rgba(255,255,255,.06); }
+.order-total { background:rgba(31,30,48,.9); border:1px solid rgba(124,58,237,.35); border-radius:var(--radius-card); padding:18px 20px; box-shadow:0 0 28px rgba(124,58,237,.15),inset 0 1px 0 rgba(255,255,255,.06); }
 .ot-label { color:#7A7A8A; font-size:.62rem; text-transform:uppercase; letter-spacing:.09em; font-weight:700; }
-.ot-val { color:var(--purple); font-family:var(--mono) !important; font-size:1.55rem; font-weight:800; text-align:left; text-shadow:0 0 16px rgba(196,181,253,.3); }
+.ot-val { color:var(--purple); font-family:var(--mono) !important; font-size:1.48rem; font-weight:800; text-align:left; text-shadow:0 0 16px rgba(196,181,253,.3); }
 .ot-sub { color:#A1A1AA; font-family:var(--mono) !important; font-size:.65rem; text-align:left; }
 .margin-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-soft); margin-bottom:12px; }
 .margin-label { color:#7A7A8A; font-size:.75rem; }
@@ -170,6 +184,10 @@ div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky; 
 .login-shell { max-width:420px; margin:12vh auto; padding:28px; border:1px solid var(--border); border-radius:20px; background:rgba(17,19,24,.92); box-shadow:0 20px 80px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.06); }
 .login-title { font-size:1.25rem; font-weight:800; margin-bottom:6px; } .login-sub { color:var(--subtle); font-size:.82rem; margin-bottom:18px; line-height:1.6; }
 [data-testid="stDataFrame"] * { font-family:var(--mono) !important; }
+.breadcrumb { display:inline-flex; align-items:center; gap:9px; padding:7px 12px; background:rgba(26,27,34,.84); border:1px solid var(--border); border-radius:8px; color:#8A8D96; font-size:.72rem; margin-bottom:26px; }
+.breadcrumb strong { color:#FAFAFA; font-weight:800; }
+.products-stage { max-width:980px; margin:0 auto; }
+@media (max-width: 1180px) { .main .block-container { padding-right:1.2rem !important; } .quote-rail { position:relative; right:auto; top:auto; bottom:auto; width:100%; border-left:0; margin-top:16px; } }
 @media (max-width: 1100px) { .metric-grid, .spec-strip { grid-template-columns:1fr; } .vc-header { align-items:flex-start; flex-direction:column; } }
 </style>
         """,
@@ -444,15 +462,22 @@ def sync_selection_from_query(df: pd.DataFrame) -> None:
 
     valid_categories = set(df["系列"].dropna().astype(str))
     valid_products = set(df["产品名称"].dropna().astype(str))
+    category_aliases = {cat: cat for cat in valid_categories}
+    category_aliases.update({f"{cat}系列": cat for cat in valid_categories if not cat.endswith("系列")})
 
     if raw_cat:
-        cat = unquote(str(raw_cat))
+        cat = unquote(str(raw_cat)).strip()
+        cat = category_aliases.get(cat, cat)
         if cat in valid_categories:
             st.session_state.selected_cat = cat
     if raw_prod:
         prod = unquote(str(raw_prod))
         if prod in valid_products:
             st.session_state.selected_prod = prod
+    if st.session_state.selected_cat and not st.session_state.selected_prod:
+        cat_df = df[df["系列"].astype(str) == str(st.session_state.selected_cat)]
+        if len(cat_df):
+            st.session_state.selected_prod = str(cat_df.iloc[0]["产品名称"])
 
 
 # ═══════════════════════════════════════════════════════════
@@ -641,8 +666,9 @@ def render_product_grid(df: pd.DataFrame) -> None:
     selected_cat = st.session_state.selected_cat
     selected_prod = st.session_state.selected_prod
     safe_cat_title = html.escape(str(selected_cat))
+    safe_prod_title = html.escape(str(selected_prod)) if selected_prod else "请选择产品"
     st.markdown(
-        f'<div class="page-title">{safe_cat_title}系列</div><div class="page-sub">点击任意产品卡片即可选中，报价结果会在右侧实时刷新。</div>',
+        f'<div class="products-stage"><div class="breadcrumb"><span>所有系列</span><span>/</span><span>{safe_cat_title}系列</span><span>/</span><strong>{safe_prod_title}</strong></div>',
         unsafe_allow_html=True,
     )
 
@@ -670,6 +696,7 @@ def render_product_grid(df: pd.DataFrame) -> None:
                     """,
                     unsafe_allow_html=True,
                 )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_series_navigation(df: pd.DataFrame) -> None:
@@ -850,25 +877,120 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
 
 
 
+def render_quote_rail(df: pd.DataFrame, params: dict[str, Any]) -> None:
+    """渲染截图版右侧固定报价抽屉，使用纯 HTML 保证云端部署视觉一致。"""
+    product = get_selected_product(df)
+    if product is None:
+        title = "开始报价" if st.session_state.selected_cat is None else "选择产品"
+        desc = "先选择产品系列，然后选择具体产品。" if st.session_state.selected_cat is None else "点击中间任意产品卡片后，报价结果将在这里实时显示。"
+        st.markdown(
+            f"""
+            <div class="quote-rail">
+              <div class="quote-card">
+                <div class="quote-empty">
+                  <div>
+                    <div style="font-size:2rem;color:#6B7280;margin-bottom:1rem;">◇</div>
+                    <div style="font-size:1rem;font-weight:800;color:#D1D5DB;margin-bottom:8px;">{html.escape(title)}</div>
+                    <div style="font-size:.78rem;color:#9CA3AF;line-height:1.6;">{html.escape(desc)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        return
+
+    quote = calculate_quote(
+        product,
+        copper_price=params["copper_price"],
+        plating=st.session_state.plating,
+        packaging=st.session_state.packaging,
+        quantity=int(st.session_state.quantity),
+        destination=st.session_state.destination,
+        currency=params["currency"],
+        exchange_rate=params["exchange_rate"],
+        box_l=params["box_l"],
+        box_w=params["box_w"],
+        box_h=params["box_h"],
+        units_per_box=int(params["units_per_box"]),
+    )
+    currency = params["currency"]
+    symbol = CURRENCY_SYMBOLS.get(currency, "")
+    margin = float(quote["margin"])
+    if margin >= 15:
+        pill_class, arrow = "mp-good", "↑"
+    elif margin >= 8:
+        pill_class, arrow = "mp-warn", "→"
+    else:
+        pill_class, arrow = "mp-danger", "↓"
+
+    cost_items = [
+        ("原材料", quote["原材料"], "#635BFF"),
+        ("加工+配件", quote["加工配件"], "#22C55E"),
+        ("电镀", quote["电镀"], "#EAB308"),
+        ("包装", quote["包装"], "#8B5CF6"),
+        ("运费", quote["运费"], "#3B82F6"),
+        ("利润", quote["利润"], "#EF4444"),
+    ]
+    cost_html = "".join(
+        f"<div class='cost-row'><span class='cost-dot' style='background:{color}'></span><span class='cost-name'>{html.escape(name)}</span><span class='cost-val'>¥{value:.3f}</span><span class='cost-pct'>{(round(value / quote['rmb'] * 100, 1) if quote['rmb'] else 0)}%</span></div>"
+        for name, value, color in cost_items
+    )
+    formula = (
+        f"原材料 = {quote['net_g']}g × {params['copper_price']:,.0f} / 1,000,000 = ¥{quote['原材料']}\n"
+        f"电镀   = {quote['net_g']}g × {PLATING_RATES.get(st.session_state.plating, 0):,} / 1,000,000 = ¥{quote['电镀']}\n"
+        f"运费   = {FREIGHT_RATES.get(st.session_state.destination, 0)} $/CBM × {quote['cbm']} CBM / {params['units_per_box']} × {params['exchange_rate']} = ¥{quote['运费']}\n"
+        f"{'─' * 30}\n"
+        f"RMB    = {quote['原材料']} + {quote['加工配件']} + {quote['电镀']} + {quote['包装']} + {quote['运费']} + {quote['利润']} = ¥{quote['rmb']}\n"
+        f"{currency} = ¥{quote['rmb']} / {quote['eff_rate']} = {symbol}{quote['fgn']}"
+    )
+    safe_product_name = html.escape(str(product["产品名称"]))
+    st.markdown(
+        f"""
+        <div class="quote-rail">
+          <div class="quote-card">
+            <div class="panel-kicker"><span>实时报价</span><span><span class="dot dot-green"></span> 实时汇率已应用</span></div>
+            <div class="panel-product">{safe_product_name}</div>
+            <div class="price-hero">
+              <div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{currency} / 只</div></div>
+              <div class="ph-amount">{symbol}{quote['fgn']:.4f}</div>
+              <div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div>
+              <div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']} · 含 2% 安全边际</div>
+            </div>
+            <div class="metric-grid">
+              <div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div>
+              <div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div>
+            </div>
+            <div class="order-total">
+              <div class="ph-row"><div class="ot-label">订单总价</div><div style="color:#9CA3AF;font-size:.62rem;font-family:JetBrains Mono,monospace;">{int(st.session_state.quantity):,} 只</div></div>
+              <div class="ot-val">{symbol}{quote['total']:,.2f}</div>
+              <div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity):,} {currency}</div>
+            </div>
+            <div class="margin-row"><span class="margin-label">利润率</span><span class="margin-pill {pill_class}">{arrow} {margin}%</span></div>
+            <details><summary>成本构成明细</summary>{cost_html}</details>
+            <details><summary>查看计算公式</summary><div class="formula">{html.escape(formula)}</div></details>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> None:
-    """渲染主工作台：左侧系列导航 + 中间产品区 + 右侧粘性报价区。"""
+    """渲染截图版工作台：侧边栏参数 + 中间产品网格 + 右侧固定报价抽屉。"""
     st.markdown('<div id="workbench"></div>', unsafe_allow_html=True)
-    col_left, col_mid, col_right = st.columns([1, 2.5, 1.2], gap="large")
-    with col_left:
-        render_series_navigation(df)
-    with col_mid:
-        if st.session_state.selected_cat is None:
-            render_product_empty_state(df)
-        else:
-            render_product_grid(df)
-            selected = get_selected_product(df)
-            if selected is not None:
-                st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
-                render_product_specs(selected)
-                render_quote_controls()
-    with col_right:
-        st.markdown('<div class="quote-column-marker"></div>', unsafe_allow_html=True)
-        render_quote_panel(get_selected_product(df), params)
+    if st.session_state.selected_cat is None:
+        render_category_selector(df)
+    else:
+        render_product_grid(df)
+        selected = get_selected_product(df)
+        if selected is not None:
+            st.markdown('<div class="products-stage" style="margin-top:14px;">', unsafe_allow_html=True)
+            render_product_specs(selected)
+            render_quote_controls()
+            st.markdown('</div>', unsafe_allow_html=True)
+    render_quote_rail(df, params)
 
 
 def render_bottom_tools(df: pd.DataFrame, params: dict[str, Any]) -> None:
