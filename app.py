@@ -2,7 +2,7 @@
 成宁阀芯报价工作台 · Streamlit Cloud 生产版
 
 本文件是面向 Streamlit Cloud 的完整单文件入口。设计重点如下：
-1. 页面主工作区强制使用 st.columns([1, 2.3, 1.4])，保证左侧参数栏、中间产品矩阵、右侧报价栏比例稳定。
+1. 页面主工作区强制使用 st.columns([1.1, 3.0, 1.4])，保证左侧参数栏、中间产品矩阵、右侧报价栏比例稳定。
 2. 所有业务页面切换均由 st.session_state.page 管理，禁止任何外部页面跳转，避免云端重复登录。
 3. 面包屑、系列卡片、产品卡片均使用 st.button 触发内部状态切换并 st.rerun()。
 4. 产品与成本参数只从 data/products.xlsx 读取；账号密码只从 Streamlit Secrets 读取。
@@ -60,237 +60,152 @@ st.set_page_config(
 # 视觉系统：浅灰白专业 SaaS 布局
 # ═══════════════════════════════════════════════════════════
 def inject_css() -> None:
-    """注入浅灰白 SaaS 视觉系统，并稳定三栏比例和卡片按钮点击区域。"""
+    """注入 Linear / Notion 风格的灰白专业视觉系统。"""
     st.markdown(
         """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block');
 
 :root {
-  --bg-base:#F8F9FA;
-  --bg-panel:#FFFFFF;
-  --bg-soft:#F3F5F8;
-  --border:#E6E9EF;
-  --border-strong:#D7DCE5;
-  --text:#111827;
+  --bg:#F8F9FA;
+  --panel:#FFFFFF;
+  --soft:#F3F5F8;
+  --line:#E6E9EF;
+  --line-strong:#D8DEE8;
+  --text:#1F2937;
   --muted:#667085;
   --subtle:#98A2B3;
-  --disabled:#C0C6D0;
   --purple:#6D5DFB;
   --purple-soft:#F1EFFF;
   --green:#12B76A;
   --yellow:#F79009;
   --red:#F04438;
-  --blue:#2E90FA;
-  --shadow:0 12px 34px rgba(15,23,42,.07);
-  --shadow-soft:0 6px 18px rgba(15,23,42,.045);
-  --radius-card:18px;
-  --radius-control:12px;
-  --font:'Inter',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+  --shadow:0 2px 8px rgba(0,0,0,0.05);
+  --shadow-hover:0 14px 30px rgba(15,23,42,0.09);
+  --radius:18px;
+  --font:'Inter','PingFang SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,sans-serif;
   --mono:'JetBrains Mono','SF Mono','Consolas',monospace;
 }
-
 *, *::before, *::after { box-sizing:border-box; font-family:var(--font) !important; }
-span[data-testid="stIconMaterial"], span[translate="no"], span[class*="material"], i[class*="material"], .material-icons, .material-symbols-rounded, .material-symbols-outlined {
-  font-family:'Material Symbols Rounded','Material Symbols Outlined','Material Icons' !important;
-  font-weight:normal !important; font-style:normal !important; line-height:1 !important;
-  letter-spacing:normal !important; text-transform:none !important; white-space:nowrap !important;
-  -webkit-font-feature-settings:'liga' !important; font-feature-settings:'liga' !important;
-  -webkit-font-smoothing:antialiased !important;
-}
-
-.stApp { background:var(--bg-base) !important; color:var(--text) !important; overflow-x:hidden !important; }
+.stApp { background:var(--bg) !important; color:var(--text) !important; overflow-x:hidden !important; }
 #MainMenu, footer, header[data-testid="stHeader"], .stDeployButton, [data-testid="stToolbar"] { display:none !important; }
-.main .block-container { max-width:none !important; padding:86px 1.2rem 1.8rem 1.2rem !important; overflow-x:hidden !important; }
-hr { border-color:var(--border) !important; margin:1rem 0 !important; }
+.main .block-container { max-width:none !important; padding:82px 2.1rem 1.8rem 2.1rem !important; }
+hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
-/* 全局输入控件 */
-div[data-baseweb="input"] > div, div[data-baseweb="select"] > div:first-child, textarea {
-  background:var(--bg-panel) !important; border:1px solid var(--border) !important; border-radius:var(--radius-control) !important;
-  box-shadow:0 1px 2px rgba(15,23,42,.03) !important;
-}
-div[data-baseweb="input"] input, .stNumberInput input, textarea { color:var(--text) !important; font-family:var(--mono) !important; }
-label, [data-testid="stWidgetLabel"] { color:var(--muted) !important; font-weight:650 !important; }
-
-/* 顶部固定页眉 */
-.vc-header {
-  display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  min-height:56px; padding:11px calc(1.2rem + 18px); margin:0;
-  background:rgba(255,255,255,.96); border-bottom:1px solid var(--border);
-  box-shadow:0 8px 26px rgba(15,23,42,.055); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  position:fixed; top:0; left:0; right:0; width:100vw; z-index:1000; box-sizing:border-box;
-}
+/* 固定顶部页眉 */
+.vc-header { position:fixed; z-index:1000; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; background:rgba(255,255,255,.96); border-bottom:1px solid var(--line); box-shadow:var(--shadow); backdrop-filter:blur(14px); }
 .vc-brand { display:flex; align-items:center; gap:10px; min-width:0; }
-.vc-logo { width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.78rem; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 8px 20px rgba(109,93,251,.22); }
-.vc-title { color:var(--text); font-size:.92rem; font-weight:800; letter-spacing:-.02em; white-space:nowrap; }
+.vc-logo { width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.82rem; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 8px 18px rgba(109,93,251,.22); }
+.vc-title { color:var(--text); font-size:.95rem; font-weight:800; letter-spacing:-.02em; white-space:nowrap; }
 .vc-subtitle { display:none; }
-.status-row { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:nowrap; overflow-x:auto; }
-.status-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; border:1px solid var(--border); background:var(--bg-panel); color:#344054; font-size:.68rem; font-weight:650; white-space:nowrap; box-shadow:0 1px 2px rgba(15,23,42,.035); }
+.status-row { display:flex; gap:8px; align-items:center; overflow-x:auto; }
+.status-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; color:#344054; font-size:.68rem; font-weight:650; white-space:nowrap; box-shadow:0 1px 2px rgba(15,23,42,.035); }
 .dot { width:7px; height:7px; border-radius:999px; display:inline-block; }
 .dot-green { background:var(--green); box-shadow:0 0 0 3px rgba(18,183,106,.11); }
 .dot-yellow { background:var(--yellow); box-shadow:0 0 0 3px rgba(247,144,9,.11); }
 
-	/* 主三栏：用户指定比例 st.columns([1, 2.3, 1.4]) */
-.layout-marker { display:none; }
-div[data-testid="stHorizontalBlock"]:has(.layout-marker) { align-items:flex-start !important; gap:1.25rem !important; }
+/* 三段式布局：用户指定比例由 st.columns([1.1, 3.0, 1.4]) 实现 */
+.layout-marker, .quote-column-marker, .product-hit-marker, .series-hit-marker { display:none; }
+div[data-testid="stHorizontalBlock"]:has(.layout-marker) { align-items:flex-start !important; gap:1.35rem !important; }
 .left-pane, .workbench-pane, .quote-pane { width:100%; max-width:100%; min-width:0; }
-.left-pane { padding-right:.1rem; }
-.workbench-pane { padding:0 .45rem; overflow:hidden; }
-.quote-pane { min-width:320px; padding-left:.1rem; }
-div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky !important; top:5.25rem !important; align-self:start !important; min-width:320px !important; overflow:visible !important; }
-.quote-column-marker, .cat-card-marker, .prod-card-marker, .crumb-marker { display:none; }
+.workbench-pane { padding:0 .4rem; overflow:visible; }
+.quote-pane { min-width:330px; }
+div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky !important; top:74px !important; align-self:start !important; min-width:330px !important; overflow:visible !important; }
 
-/* 左侧参数栏 */
-.side-panel { background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius-card); padding:16px; box-shadow:var(--shadow-soft); }
+/* 基础控件：绝不禁用 pointer-events，确保数量输入可手动编辑 */
+div[data-baseweb="input"] > div, div[data-baseweb="select"] > div:first-child, textarea { background:#fff !important; border:1px solid var(--line) !important; border-radius:12px !important; box-shadow:0 1px 2px rgba(15,23,42,.03) !important; }
+div[data-baseweb="input"] input, .stNumberInput input, textarea { color:var(--text) !important; font-family:var(--mono) !important; pointer-events:auto !important; user-select:text !important; }
+label, [data-testid="stWidgetLabel"] { color:var(--muted) !important; font-weight:650 !important; }
+.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button { border-radius:12px !important; border:1px solid var(--line) !important; background:#fff !important; color:#344054 !important; font-weight:750 !important; box-shadow:0 1px 2px rgba(15,23,42,.035) !important; transition:all .16s ease !important; }
+.stButton > button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover { border-color:#B8BDFD !important; color:var(--purple) !important; background:#FBFAFF !important; transform:translateY(-1px); }
+
+/* 左侧参数 */
+.side-panel { background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow); }
 .side-title { font-size:.95rem; font-weight:800; color:var(--text); margin-bottom:2px; }
 .side-sub { color:var(--muted); font-size:.72rem; line-height:1.55; margin-bottom:14px; }
 .sb-label { display:block; color:#475467; font-size:.72rem; font-weight:800; letter-spacing:.04em; margin:.72rem 0 .38rem; }
 .sb-hint { color:var(--muted); font-size:.7rem; line-height:1.55; margin:.38rem 0 .15rem; }
-.box-hint { text-align:center; font-family:var(--mono) !important; padding:8px 10px; border-radius:10px; background:var(--bg-soft); border:1px solid var(--border); color:#667085; }
-
-/* Upload 居中 */
+.box-hint { text-align:center; font-family:var(--mono) !important; padding:8px 10px; border-radius:10px; background:var(--soft); border:1px solid var(--line); color:#667085; }
 .upload-center { width:100%; display:flex; justify-content:center; align-items:center; }
-.stFileUploader,
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploader"] { width:100% !important; margin:0 auto !important; }
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploader"] section,
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] {
-  display:flex !important; align-items:center !important; justify-content:center !important; text-align:center !important;
-  min-height:86px !important; border:1px dashed var(--border-strong) !important; border-radius:14px !important; background:#FBFCFE !important;
-}
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploader"] * { text-align:center !important; margin-left:auto !important; margin-right:auto !important; }
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploader"] small { display:block !important; text-align:center !important; width:100% !important; }
-.version-box { margin-top:16px; padding:12px; border:1px solid var(--border); border-radius:14px; background:var(--bg-soft); text-align:center; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] { display:flex !important; align-items:center !important; justify-content:center !important; text-align:center !important; min-height:86px !important; border:1px dashed var(--line-strong) !important; border-radius:14px !important; background:#FBFCFE !important; }
+.version-box { margin-top:16px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--soft); text-align:center; }
 .version-text { color:#344054; font-family:var(--mono) !important; font-size:.72rem; font-weight:800; }
 
-/* 按钮基础 */
-.stButton > button, .stDownloadButton > button, .stFormSubmitButton > button {
-  border-radius:var(--radius-control) !important; border:1px solid var(--border) !important; background:var(--bg-panel) !important;
-  color:#344054 !important; font-weight:750 !important; transition:all .16s ease !important; box-shadow:0 1px 2px rgba(15,23,42,.035) !important;
-}
-.stButton > button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover {
-  border-color:#B8BDFD !important; color:var(--purple) !important; background:#FBFAFF !important; transform:translateY(-1px);
-}
+/* 中间工作区 */
+.page-title { font-size:1.15rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
+.page-sub { color:var(--muted); font-size:.8rem; line-height:1.65; margin-bottom:1rem; }
+.section-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); }
+.breadcrumb-wrap { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:0 0 16px 0; }
+.crumb-text, .crumb-current, .crumb-sep { display:inline-flex; align-items:center; min-height:34px; font-size:16px !important; line-height:1; }
+.crumb-sep { color:var(--subtle); padding:0 2px; }
+.crumb-current { color:var(--purple); font-weight:800; padding:7px 10px; border-radius:10px; background:var(--purple-soft); }
+div[data-testid="stHorizontalBlock"]:has(.breadcrumb-wrap) .stButton > button { min-height:34px !important; padding:7px 10px !important; font-size:16px !important; border-radius:10px !important; box-shadow:none !important; font-weight:750 !important; }
 
-/* 工作台标题和面包屑 */
-.page-title { font-size:1.05rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
-.page-sub { color:var(--muted); font-size:.78rem; line-height:1.65; margin-bottom:1rem; }
-.breadcrumb-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
-div[data-testid="stMarkdownContainer"]:has(.crumb-marker) + div[data-testid="stButton"] > button,
-div[data-testid="stMarkdownContainer"]:has(.crumb-marker) + div.stButton > button,
-div[data-testid="stMarkdownContainer"]:has(.crumb-marker) ~ div[data-testid="stButton"] > button { min-height:32px !important; padding:6px 10px !important; border-radius:9px !important; font-size:.72rem !important; box-shadow:none !important; }
-.crumb-current { display:inline-flex; min-height:32px; align-items:center; padding:7px 10px; border-radius:9px; border:1px solid var(--border); background:var(--purple-soft); color:var(--purple); font-size:.72rem; font-weight:850; }
-.crumb-sep { display:inline-flex; align-items:center; min-height:32px; color:#98A2B3; font-size:.78rem; }
+/* 首页系列卡 */
+.series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:all .16s ease; }
+.series-card:hover { border-color:#B8BDFD; box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.series-icon { width:44px; height:44px; border-radius:15px; display:flex; align-items:center; justify-content:center; background:var(--purple-soft); color:var(--purple); font-size:1.2rem; font-weight:900; }
+.series-title { font-size:1.15rem; font-weight:850; color:var(--text); }
+.series-desc { color:#475467; font-size:.84rem; line-height:1.6; max-width:300px; }
+.series-count { color:var(--text); font-size:.82rem; font-weight:800; }
+div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton, div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div[data-testid="stButton"] { height:0 !important; margin:0 !important; padding:0 !important; }
+div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > button, div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div[data-testid="stButton"] > button { height:210px !important; min-height:210px !important; width:100% !important; margin-top:-210px !important; opacity:.001 !important; cursor:pointer !important; position:relative !important; z-index:20 !important; }
 
+/* 产品卡网格 */
+.products-note { color:var(--muted); font-size:.78rem; margin-bottom:14px; }
+.product-card { min-height:250px; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:all .16s ease; overflow:hidden; }
+.product-card:hover { border-color:#B8BDFD; box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.product-card.selected { border:2px solid var(--purple); box-shadow:0 0 0 4px rgba(109,93,251,.10), var(--shadow-hover); }
+.product-img-wrap { height:138px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.product-img { width:100%; height:100%; object-fit:contain; display:block; }
+.product-name { margin-top:12px; color:var(--text); font-size:.92rem; font-weight:850; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+.product-spec { margin-top:7px; color:var(--muted); font-size:.72rem; font-family:var(--mono) !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+.product-check { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:var(--purple); color:#fff; font-size:.72rem; font-weight:900; }
+div[data-testid="stMarkdownContainer"]:has(.product-hit-marker) + div.stButton, div[data-testid="stMarkdownContainer"]:has(.product-hit-marker) + div[data-testid="stButton"] { height:0 !important; margin:0 !important; padding:0 !important; }
+div[data-testid="stMarkdownContainer"]:has(.product-hit-marker) + div.stButton > button, div[data-testid="stMarkdownContainer"]:has(.product-hit-marker) + div[data-testid="stButton"] > button { height:250px !important; min-height:250px !important; width:100% !important; margin-top:-250px !important; opacity:.001 !important; cursor:pointer !important; position:relative !important; z-index:20 !important; }
 
-
-/* 首页系列卡片：只在首页入口使用，整卡即按钮 */
-div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div[data-testid="stButton"] > button,
-div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div.stButton > button,
-div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) ~ div[data-testid="stButton"] > button {
-  width:100% !important; min-height:232px !important; padding:30px 28px !important; text-align:center !important; justify-content:center !important; align-items:center !important;
-  white-space:pre-line !important; line-height:1.68 !important; border-radius:var(--radius-card) !important;
-  background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 72%,#F7F8FB 100%) !important; border:1px solid var(--border) !important; box-shadow:var(--shadow-soft) !important;
-  color:var(--text) !important; font-size:.98rem !important; font-weight:850 !important;
-}
-div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div[data-testid="stButton"] > button:hover,
-div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div.stButton > button:hover,
-div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) ~ div[data-testid="stButton"] > button:hover { border-color:var(--purple) !important; box-shadow:0 16px 34px rgba(109,93,251,.12) !important; background:#FFFFFF !important; }
-
-/* 产品 Grid 容器：必须 padding，防止向左溢出遮挡边栏 */
-.products-shell { background:var(--bg-panel); border:1px solid var(--border); border-radius:22px; padding:18px; box-shadow:var(--shadow-soft); overflow:hidden; }
-.products-grid-note { color:var(--muted); font-size:.72rem; margin-bottom:12px; }
-
-/* 产品小卡片：原生整卡按钮，避免透明覆盖层导致后排点击失效 */
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button {
-  width:100% !important; min-height:172px !important; padding:16px 12px 14px !important; display:flex !important;
-  align-items:flex-end !important; justify-content:center !important; position:relative !important; text-align:center !important;
-  white-space:pre-line !important; line-height:1.28 !important; color:var(--text) !important; font-size:.78rem !important; font-weight:850 !important;
-  background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 70%,#F7F8FB 100%) !important;
-  border:1px solid var(--border) !important; border-radius:18px !important; box-shadow:var(--shadow-soft) !important; cursor:pointer !important; overflow:hidden !important;
-}
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button::before,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button::before,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button::before {
-  content:""; position:absolute; top:20px; left:50%; transform:translateX(-50%); width:92px; height:92px; border-radius:50%;
-  background:radial-gradient(circle at center,#E9FBF1 0%,#E9FBF1 54%,transparent 55%), linear-gradient(135deg,#DFF7E9,#F3FFF8);
-  border:1px solid #D7F0E1;
-}
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button::after,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button::after,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button::after {
-  content:"◇"; position:absolute; top:54px; left:50%; transform:translateX(-50%); color:#15A46A; font-size:1.45rem; font-weight:400;
-}
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button:hover,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button:hover,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button:hover { border-color:var(--purple) !important; box-shadow:0 18px 34px rgba(109,93,251,.14) !important; transform:translateY(-2px); }
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div[data-testid="stButton"] > button,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div.stButton > button,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) ~ div[data-testid="stButton"] > button { border:2px solid var(--purple) !important; box-shadow:0 0 0 4px rgba(109,93,251,.10),0 18px 36px rgba(109,93,251,.16) !important; }
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div[data-testid="stButton"] > button::after,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div.stButton > button::after,
-div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) ~ div[data-testid="stButton"] > button::after { content:"✓"; top:14px; left:auto; right:14px; transform:none; width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:999px; background:var(--purple); color:#fff; font-size:.78rem; font-weight:900; }
-
-/* 规格条和中间报价参数 */
+/* 规格、控制、报价 */
 .spec-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
-.spec-cell { background:var(--bg-panel); border:1px solid var(--border); border-radius:14px; padding:14px; box-shadow:0 1px 2px rgba(15,23,42,.03); }
-.sc-label { color:var(--muted); font-size:.68rem; font-weight:800; margin-bottom:4px; }
-.sc-val { color:var(--text); font-family:var(--mono) !important; font-weight:850; font-size:1.05rem; }
-.sc-sub { color:var(--subtle); font-size:.7rem; margin-top:4px; }
-.warn-bar { color:#B54708; background:#FFFAEB; border:1px solid #FEDF89; border-radius:12px; padding:10px 12px; font-size:.76rem; margin:12px 0; }
-.controls-card { background:var(--bg-panel); border:1px solid var(--border); border-radius:18px; padding:16px; box-shadow:var(--shadow-soft); margin-top:14px; }
-.empty-card { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; background:var(--bg-panel); border:1px solid var(--border); border-radius:22px; padding:24px; box-shadow:var(--shadow-soft); }
+.spec-cell, .metric-tile { background:#FBFCFE; border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:0 1px 2px rgba(15,23,42,.03); }
+.sc-label, .mt-label, .ot-label, .ph-label { color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.04em; }
+.sc-val, .mt-val { margin-top:5px; color:#101828; font-family:var(--mono) !important; font-size:1.02rem; font-weight:850; white-space:nowrap; }
+.sc-sub, .mt-sub { color:var(--subtle); font-size:.66rem; margin-top:3px; }
+.controls-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow); margin-top:14px; }
+.quote-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:0 16px 34px rgba(15,23,42,.07); min-width:330px; overflow:hidden; }
+.empty-quote { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; }
 .empty-icon { width:52px; height:52px; display:inline-flex; align-items:center; justify-content:center; border-radius:16px; background:var(--purple-soft); color:var(--purple); margin-bottom:12px; font-weight:900; }
-
-/* 右侧报价栏：足够宽度，金额和成本行不换行挤压 */
-.quote-card { background:var(--bg-panel); border:1px solid var(--border); border-radius:22px; padding:18px; box-shadow:var(--shadow); min-width:320px; overflow:hidden; }
-.panel-kicker { display:flex; align-items:center; justify-content:space-between; gap:8px; color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.06em; margin-bottom:10px; }
+.panel-kicker { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.06em; margin-bottom:10px; }
 .panel-product { font-size:1.05rem; font-weight:850; color:var(--text); margin-bottom:12px; }
-.price-hero { border:1px solid #E8E7FF; border-radius:18px; padding:18px; background:linear-gradient(135deg,#FFFFFF 0%,#F7F6FF 100%); box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
+.price-hero { border:1px solid #E8E7FF; border-radius:18px; padding:18px; background:linear-gradient(135deg,#FFFFFF 0%,#F7F6FF 100%); }
 .ph-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.ph-label, .ot-label, .mt-label { color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.04em; }
 .ph-currency { color:#667085; font-size:.72rem; white-space:nowrap; }
-.ph-amount { margin-top:8px; color:#101828; font-family:var(--mono) !important; font-size:28px; font-weight:850; letter-spacing:-.04em; line-height:1.08; white-space:nowrap; overflow:visible; text-align:left; }
-.ph-rmb { margin-top:7px; color:#344054; font-family:var(--mono) !important; font-size:.88rem; font-weight:800; white-space:nowrap; }
-.ph-sub { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); color:#667085; font-size:.66rem; line-height:1.55; }
+.ph-amount { margin-top:8px; color:#101828; font-family:var(--mono) !important; font-size:28px; font-weight:850; letter-spacing:-.04em; line-height:1.08; white-space:nowrap; text-align:left !important; }
+.ph-rmb { margin-top:7px; color:#344054; font-family:var(--mono) !important; font-size:.88rem; font-weight:800; text-align:left !important; }
+.ph-sub { margin-top:12px; padding-top:10px; border-top:1px solid var(--line); color:#667085; font-size:.66rem; line-height:1.55; }
 .metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
-.metric-tile { background:#FBFCFE; border:1px solid var(--border); border-radius:16px; padding:14px; min-width:0; }
-.mt-val { margin-top:6px; color:#101828; font-family:var(--mono) !important; font-size:1.04rem; font-weight:850; white-space:nowrap; }
-.mt-sub { color:var(--subtle); font-size:.66rem; margin-top:3px; }
-.order-total { background:linear-gradient(135deg,#F7F5FF,#FFFFFF); border:1px solid #E4E0FF; border-radius:18px; padding:16px; margin-bottom:12px; }
-.ot-val { color:var(--purple); font-family:var(--mono) !important; font-size:1.45rem; font-weight:850; white-space:nowrap; margin-top:6px; }
-.ot-sub { color:#667085; font-family:var(--mono) !important; font-size:.66rem; margin-top:4px; white-space:nowrap; }
-.margin-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 0; border-top:1px solid var(--border); }
+.order-total { background:linear-gradient(135deg,#F7F5FF,#FFFFFF); border:1px solid #E4E0FF; border-radius:18px; padding:16px; margin-bottom:12px; text-align:left !important; }
+.ot-val { color:var(--purple); font-family:var(--mono) !important; font-size:1.45rem; font-weight:850; white-space:nowrap; margin-top:6px; text-align:left !important; }
+.ot-sub { color:#667085; font-family:var(--mono) !important; font-size:.66rem; margin-top:4px; white-space:nowrap; text-align:left !important; }
+.margin-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 0; border-top:1px solid var(--line); }
 .margin-label { color:#475467; font-size:.76rem; font-weight:800; }
-.margin-pill { display:inline-flex; align-items:center; padding:5px 10px; border-radius:999px; font-family:var(--mono) !important; font-size:.72rem; font-weight:850; white-space:nowrap; }
+.margin-pill { display:inline-flex; padding:5px 10px; border-radius:999px; font-family:var(--mono) !important; font-size:.72rem; font-weight:850; white-space:nowrap; }
 .mp-good { color:#067647; background:#ECFDF3; border:1px solid #ABEFC6; }
 .mp-warn { color:#B54708; background:#FFFAEB; border:1px solid #FEDF89; }
 .mp-danger { color:#B42318; background:#FEF3F2; border:1px solid #FECDCA; }
-.cost-row { display:grid; grid-template-columns:8px minmax(64px,1fr) 76px 42px; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); }
+.cost-row { display:grid; grid-template-columns:8px minmax(64px,1fr) 76px 42px; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
 .cost-dot { width:8px; height:8px; border-radius:999px; }
 .cost-name { color:#475467; font-size:.72rem; font-weight:700; white-space:nowrap; }
 .cost-val { color:#101828; font-family:var(--mono) !important; font-size:.72rem; text-align:right; white-space:nowrap; }
 .cost-pct { color:#98A2B3; font-size:.66rem; text-align:right; white-space:nowrap; }
 .formula { font-family:var(--mono) !important; color:#475467; font-size:.7rem; line-height:1.7; white-space:pre-wrap; }
-.tool-card { background:var(--bg-panel); border:1px solid var(--border); border-radius:22px; padding:18px; box-shadow:var(--shadow-soft); margin-top:18px; }
-.login-shell { max-width:420px; margin:12vh auto 1.5rem; padding:30px; border:1px solid var(--border); border-radius:22px; background:var(--bg-panel); box-shadow:var(--shadow); }
+.tool-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); margin-top:18px; }
+.login-shell { max-width:420px; margin:12vh auto 1.5rem; padding:30px; border:1px solid var(--line); border-radius:22px; background:#fff; box-shadow:var(--shadow); }
 .login-title { font-size:1.2rem; font-weight:850; color:var(--text); margin-bottom:4px; }
 .login-sub { color:var(--muted); font-size:.82rem; line-height:1.65; }
 [data-testid="stDataFrame"] * { font-family:var(--mono) !important; }
-
-@media (max-width: 1280px) {
-  .quote-pane, .quote-card, div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { min-width:300px !important; }
-	  .ph-amount { font-size:28px; }
-}
-@media (max-width: 980px) {
-  div[data-testid="stHorizontalBlock"]:has(.layout-marker) { flex-direction:column !important; }
-  .quote-pane, .quote-card, div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { min-width:100% !important; position:relative !important; top:auto !important; }
-  .spec-strip, .metric-grid { grid-template-columns:1fr; }
-  .vc-header { position:relative; flex-direction:column; align-items:flex-start; }
-}
+@media (max-width: 1180px) { .main .block-container { padding-left:1rem !important; padding-right:1rem !important; } .quote-pane, .quote-card { min-width:300px; } .product-img-wrap { height:120px; } }
+@media (max-width: 980px) { div[data-testid="stHorizontalBlock"]:has(.layout-marker) { flex-direction:column !important; } div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:relative !important; top:auto !important; min-width:100% !important; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .vc-header { padding:0 1rem; } }
 </style>
         """,
         unsafe_allow_html=True,
@@ -593,23 +508,16 @@ def ensure_valid_selection(df: pd.DataFrame) -> None:
 
 
 # ═══════════════════════════════════════════════════════════
-# UI 渲染层
+# UI 渲染层：单页面专业生产力工作台
 # ═══════════════════════════════════════════════════════════
 def render_sidebar_controls() -> dict[str, Any]:
-    """渲染左侧窄屏参数栏。"""
+    """渲染左侧报价参数栏，保留所有输入框手动编辑能力。"""
     st.markdown('<div class="left-pane"><div class="side-panel"><div class="side-title">报价参数</div><div class="side-sub">铜价、汇率与箱规在此统一管理。</div>', unsafe_allow_html=True)
 
     st.markdown('<span class="sb-label">铜价（元/吨）</span>', unsafe_allow_html=True)
-    copper_price = st.number_input(
-        "铜价",
-        min_value=40000,
-        max_value=150000,
-        value=int(st.session_state.copper_price),
-        step=100,
-        label_visibility="collapsed",
-    )
+    copper_price = st.number_input("铜价", min_value=40000, max_value=150000, value=int(st.session_state.copper_price), step=100, label_visibility="collapsed")
     st.session_state.copper_price = copper_price
-    if st.button("同步实时铜价", key="sync_copper", use_container_width=True, icon=":material/sync:"):
+    if st.button("同步实时铜价", key="sync_copper", use_container_width=True):
         with st.spinner("同步铜价中..."):
             result = cached_copper_price()
             st.session_state.copper_price = float(result.get("price", DEFAULT_COPPER_PRICE))
@@ -619,40 +527,16 @@ def render_sidebar_controls() -> dict[str, Any]:
     st.divider()
     st.markdown('<span class="sb-label">报价货币</span>', unsafe_allow_html=True)
     currency_options = ["USD", "EUR", "AED", "SAR", "MYR", "BRL", "NGN", "RMB"]
-    currency_labels = {
-        "USD": "$ USD · 美元",
-        "EUR": "€ EUR · 欧元",
-        "AED": "AED · 迪拉姆",
-        "SAR": "SAR · 里亚尔",
-        "MYR": "RM MYR · 林吉特",
-        "BRL": "R$ BRL · 雷亚尔",
-        "NGN": "₦ NGN · 奈拉",
-        "RMB": "¥ RMB · 人民币",
-    }
-    currency = st.selectbox(
-        "报价货币",
-        currency_options,
-        format_func=lambda item: currency_labels.get(item, item),
-        index=currency_options.index(st.session_state.currency) if st.session_state.currency in currency_options else 0,
-        label_visibility="collapsed",
-    )
+    currency_labels = {"USD":"$ USD · 美元","EUR":"€ EUR · 欧元","AED":"AED · 迪拉姆","SAR":"SAR · 里亚尔","MYR":"RM MYR · 林吉特","BRL":"R$ BRL · 雷亚尔","NGN":"₦ NGN · 奈拉","RMB":"¥ RMB · 人民币"}
+    currency = st.selectbox("报价货币", currency_options, format_func=lambda item: currency_labels.get(item, item), index=currency_options.index(st.session_state.currency) if st.session_state.currency in currency_options else 0, label_visibility="collapsed")
     st.session_state.currency = currency
     default_rate = st.session_state.rates.get(currency, DEFAULT_RATES.get(currency, 1.0)) if currency != "RMB" else 1.0
-    exchange_rate = st.number_input(
-        "汇率",
-        min_value=0.0001,
-        max_value=100.0,
-        value=float(default_rate),
-        step=0.01,
-        format="%.4f",
-        disabled=(currency == "RMB"),
-        label_visibility="collapsed",
-    )
+    exchange_rate = st.number_input("汇率", min_value=0.0001, max_value=100.0, value=float(default_rate), step=0.01, format="%.4f", disabled=(currency == "RMB"), label_visibility="collapsed")
     st.session_state.exchange_rate = exchange_rate
     if currency != "RMB":
         effective_rate = round(exchange_rate * EXCHANGE_RATE_MARGIN, 4)
         st.markdown(f'<p class="sb-hint">报价汇率 = {exchange_rate} × {EXCHANGE_RATE_MARGIN} = <b>{effective_rate}</b></p>', unsafe_allow_html=True)
-    if st.button("同步实时汇率", key="sync_rates", use_container_width=True, icon=":material/currency_exchange:"):
+    if st.button("同步实时汇率", key="sync_rates", use_container_width=True):
         with st.spinner("同步汇率中..."):
             st.session_state.rates = cached_exchange_rates()
         st.rerun()
@@ -673,8 +557,7 @@ def render_sidebar_controls() -> dict[str, Any]:
     st.session_state.units_per_box = units_per_box
 
     st.divider()
-    st.markdown('<span class="sb-label">数据管理</span>', unsafe_allow_html=True)
-    st.markdown('<div class="upload-center"></div>', unsafe_allow_html=True)
+    st.markdown('<span class="sb-label">数据管理</span><div class="upload-center"></div>', unsafe_allow_html=True)
     uploaded = st.file_uploader("上传产品明细表", type=["xlsx"], label_visibility="collapsed")
     if uploaded:
         saved_path = UPLOAD_DIR / uploaded.name
@@ -691,28 +574,11 @@ def render_sidebar_controls() -> dict[str, Any]:
 
     render_version_block()
     st.markdown('</div></div>', unsafe_allow_html=True)
-
-    return {
-        "copper_price": copper_price,
-        "currency": currency,
-        "exchange_rate": exchange_rate,
-        "box_l": box_l,
-        "box_w": box_w,
-        "box_h": box_h,
-        "units_per_box": units_per_box,
-    }
+    return {"copper_price": copper_price, "currency": currency, "exchange_rate": exchange_rate, "box_l": box_l, "box_w": box_w, "box_h": box_h, "units_per_box": units_per_box}
 
 
 def render_version_block() -> None:
-    st.markdown(
-        f"""
-        <div class="version-box">
-          <div class="version-text">{APP_VERSION}</div>
-          <div style="color:#98A2B3;font-size:.66rem;margin-top:4px;">Streamlit Cloud Ready</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="version-box"><div class="version-text">{APP_VERSION}</div><div style="color:#98A2B3;font-size:.66rem;margin-top:4px;">Streamlit Cloud Ready</div></div>', unsafe_allow_html=True)
     with st.expander("更新说明", expanded=False):
         for item in CHANGELOG:
             st.markdown(f"<p class='sb-hint'>• {html.escape(str(item))}</p>", unsafe_allow_html=True)
@@ -722,82 +588,82 @@ def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
     now = datetime.now().strftime("%H:%M")
     copper_dot = "dot-green" if st.session_state.copper_source != "默认值" else "dot-yellow"
     rate_dot = "dot-green" if st.session_state.rates.get("_success") else "dot-yellow"
-    st.markdown(
-        f"""
-        <div class="vc-header">
-          <div class="vc-brand">
-            <div class="vc-logo">成</div>
-            <div>
-              <div class="vc-title">{APP_NAME}</div>
-              <div class="vc-subtitle">{APP_SUBTITLE}</div>
-            </div>
-          </div>
-          <div class="status-row">
-            <span class="status-chip"><span class="dot {copper_dot}"></span>铜价 ¥{params['copper_price']:,.0f}</span>
-            <span class="status-chip"><span class="dot {rate_dot}"></span>{params['currency']} {params['exchange_rate']}</span>
-            <span class="status-chip"><span class="dot dot-green"></span>{len(df)} 产品 · {now}</span>
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"""
+    <div class="vc-header">
+      <div class="vc-brand"><div class="vc-logo">成</div><div><div class="vc-title">{APP_NAME}</div><div class="vc-subtitle">{APP_SUBTITLE}</div></div></div>
+      <div class="status-row">
+        <span class="status-chip"><span class="dot {copper_dot}"></span>铜价 ¥{params['copper_price']:,.0f}</span>
+        <span class="status-chip"><span class="dot {rate_dot}"></span>{params['currency']} {params['exchange_rate']}</span>
+        <span class="status-chip"><span class="dot dot-green"></span>{len(df)} 产品 · {now}</span>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
-def render_series_navigation(df: pd.DataFrame) -> None:
-    st.markdown('<div class="page-title">系列导航</div><div class="page-sub">点击系列后，中间区域显示产品卡片。</div>', unsafe_allow_html=True)
-    all_selected = st.session_state.page == "home"
-    st.markdown(f'<div class="side-nav-marker {"selected" if all_selected else ""}"></div>', unsafe_allow_html=True)
-    if st.button("所有系列", key="nav_all", use_container_width=True):
-        reset_to_home()
-
-    categories = list(df["系列"].dropna().astype(str).unique())
-    for idx, category in enumerate(categories):
-        count = int((df["系列"].astype(str) == str(category)).sum())
-        selected = st.session_state.selected_cat == category and st.session_state.page in {"collection", "product"}
-        st.markdown(f'<div class="side-nav-marker {"selected" if selected else ""}"></div>', unsafe_allow_html=True)
-        if st.button(f"{category}系列 · {count}款", key=f"nav_cat_{idx}_{category}", use_container_width=True):
-            open_collection(category, df, select_first=False)
-
-
-def render_breadcrumb(df: pd.DataFrame, product: pd.Series | None = None) -> None:
+def render_breadcrumb(product: pd.Series | None = None) -> None:
+    """标准水平面包屑：所有层级同字号，全部通过 page 状态机切换。"""
     selected_cat = st.session_state.selected_cat
-    st.markdown('<div class="breadcrumb-row breadcrumb-marker">', unsafe_allow_html=True)
-    crumb_cols = st.columns([0.82, 0.12, 0.86, 0.12, 1.2, 4.2], gap="small")
-    with crumb_cols[0]:
-        st.markdown('<div class="crumb-marker"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="breadcrumb-wrap"></div>', unsafe_allow_html=True)
+    cols = st.columns([1.0, .12, 1.0, .12, 2.4, 5.0], gap="small")
+    with cols[0]:
         if st.button("所有系列", key="crumb_all", use_container_width=True):
             reset_to_home()
-    with crumb_cols[1]:
+    with cols[1]:
         st.markdown('<span class="crumb-sep">/</span>', unsafe_allow_html=True)
-    with crumb_cols[2]:
+    with cols[2]:
         if selected_cat:
-            st.markdown('<div class="crumb-marker"></div>', unsafe_allow_html=True)
-            if st.button(f"{selected_cat}系列", key="crumb_collection", use_container_width=True):
+            if st.button(f"{selected_cat}系列", key="crumb_cat", use_container_width=True):
                 st.session_state.page = "collection"
                 st.rerun()
         else:
-            st.markdown('<span class="crumb-current">未选系列</span>', unsafe_allow_html=True)
-    with crumb_cols[3]:
+            st.markdown('<span class="crumb-current">选择系列</span>', unsafe_allow_html=True)
+    with cols[3]:
         st.markdown('<span class="crumb-sep">/</span>', unsafe_allow_html=True)
-    with crumb_cols[4]:
-        if product is not None:
-            st.markdown(f'<span class="crumb-current">{html.escape(str(product["产品名称"]))}</span>', unsafe_allow_html=True)
-        else:
-            st.markdown('<span class="crumb-current">产品列表</span>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with cols[4]:
+        label = html.escape(str(product["产品名称"])) if product is not None else "产品列表"
+        st.markdown(f'<span class="crumb-current">{label}</span>', unsafe_allow_html=True)
+
+
+def product_image_src(product_row: pd.Series) -> str:
+    explicit_path = resolve_relative_path(product_row.get("图片路径", ""))
+    candidates: list[Path] = []
+    if explicit_path:
+        candidates.append(explicit_path)
+    product_name = str(product_row.get("产品名称", ""))
+    for stem in [safe_filename(product_name), product_name]:
+        for suffix in [".png", ".jpg", ".jpeg", ".webp"]:
+            candidates.append(IMG_DIR / f"{stem}{suffix}")
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_file():
+            mime = "image/png"
+            if candidate.suffix.lower() in {".jpg", ".jpeg"}:
+                mime = "image/jpeg"
+            elif candidate.suffix.lower() == ".webp":
+                mime = "image/webp"
+            encoded = base64.b64encode(candidate.read_bytes()).decode("utf-8")
+            return f"data:{mime};base64,{encoded}"
+    name = html.escape(product_name[:8] or "产品")
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="320" height="220" viewBox="0 0 320 220"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F7F8FB"/><stop offset="1" stop-color="#EEF2F7"/></linearGradient></defs><rect width="320" height="220" rx="24" fill="url(#g)"/><circle cx="160" cy="92" r="42" fill="#F1EFFF"/><path d="M160 64l28 28-28 28-28-28z" fill="#6D5DFB" opacity=".86"/><text x="160" y="168" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#667085">{name}</text></svg>"""
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode("utf-8")).decode("utf-8")
 
 
 def render_category_selector(df: pd.DataFrame) -> None:
-    st.markdown('<div class="page-title">选择产品系列</div><div class="page-sub">选择阀芯类型，进入产品选择与实时报价工作台。</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-title">选择产品系列</div><div class="page-sub">选择阀芯类型，进入产品图片矩阵与实时报价工作台。</div>', unsafe_allow_html=True)
     categories = list(df["系列"].dropna().astype(str).unique())
     cols = st.columns(max(1, min(2, len(categories))), gap="large")
     for idx, category in enumerate(categories):
         count = int((df["系列"].astype(str) == str(category)).sum())
         with cols[idx % len(cols)]:
-            icon_text = ":material/bolt:" if "快" in category else ":material/settings:"
-            st.markdown('<div class="cat-card-marker"></div>', unsafe_allow_html=True)
-            card_label = f"{icon_text}\n\n{category}系列\n\n进入{category}阀芯产品矩阵\n实时选择产品并生成报价\n\n◆ {count} 款产品"
-            if st.button(card_label, key=f"cat_card_{idx}_{category}", use_container_width=True):
+            icon = "⚡" if "快" in category else "⚙"
+            st.markdown(f"""
+            <div class="series-card">
+              <div class="series-icon">{icon}</div>
+              <div class="series-title">{html.escape(category)}系列</div>
+              <div class="series-desc">进入{html.escape(category)}阀芯产品矩阵，实时选择产品并生成报价。</div>
+              <div class="series-count">◆ {count} 款产品</div>
+            </div><div class="series-hit-marker"></div>
+            """, unsafe_allow_html=True)
+            if st.button(f"打开{category}系列", key=f"series_hit_{idx}_{category}", use_container_width=True):
                 open_collection(category, df, select_first=False)
 
 
@@ -806,337 +672,175 @@ def get_selected_product(df: pd.DataFrame) -> pd.Series | None:
     if not product_name:
         return None
     matched = df[df["产品名称"].astype(str) == str(product_name)]
-    return matched.iloc[0] if len(matched) else None
+    if matched.empty:
+        return None
+    return matched.iloc[0]
 
 
 def render_product_grid(df: pd.DataFrame) -> None:
     selected_cat = st.session_state.selected_cat
-    if not selected_cat:
-        render_category_selector(df)
-        return
-
-    selected_product = get_selected_product(df)
-    render_breadcrumb(df, selected_product if st.session_state.page == "product" else None)
-    st.markdown('<div class="products-shell">', unsafe_allow_html=True)
-    st.markdown(f'<div class="products-grid-note">当前系列：<b>{html.escape(str(selected_cat))}</b>。点击任意产品卡片将在右侧刷新报价，不打开新网页。</div>', unsafe_allow_html=True)
-
-    cat_df = df[df["系列"].astype(str) == str(selected_cat)].reset_index(drop=True)
-    columns_per_row = 4
-    for start in range(0, len(cat_df), columns_per_row):
-        row_df = cat_df.iloc[start : start + columns_per_row]
-        cols = st.columns(columns_per_row, gap="medium")
-        for offset, (_, product) in enumerate(row_df.iterrows()):
-            product_name = str(product["产品名称"])
-            selected_class = "selected" if st.session_state.selected_prod == product_name else ""
-            with cols[offset]:
-                st.markdown(f'<div class="prod-card-marker product-card-marker {selected_class}"></div>', unsafe_allow_html=True)
-                if st.button(product_name, key=f"prod_card_{start}_{offset}_{product_name}", use_container_width=True, icon=":material/arrow_forward:"):
-                    open_product(str(selected_cat), product_name)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-def render_product_empty_state(df: pd.DataFrame) -> None:
-    category_count = df["系列"].nunique()
-    product_count = len(df)
-    st.markdown(
-        f"""
-        <div class="empty-card">
-          <div>
-            <div class="empty-icon">◆</div>
-            <div class="page-title">请选择左侧产品系列</div>
-            <div class="page-sub" style="max-width:520px;margin:0 auto;">当前数据库包含 {category_count} 个系列、{product_count} 款产品。选择系列后，中间区域会显示产品卡片；点击任意卡片即可在右侧生成实时报价。</div>
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    cat_df = df[df["系列"].astype(str) == str(selected_cat)].reset_index(drop=True) if selected_cat else df.reset_index(drop=True)
+    st.markdown(f'<div class="products-note">当前系列：<b>{html.escape(str(selected_cat or "全部"))}</b>。每张卡片包含图片、名称和规格；点击任意卡片即可在右侧生成报价。</div>', unsafe_allow_html=True)
+    grid_cols = st.columns(4 if len(cat_df) >= 4 else max(1, len(cat_df)), gap="large")
+    for idx, (_, product) in enumerate(cat_df.iterrows()):
+        selected = str(st.session_state.selected_prod) == str(product["产品名称"])
+        net_g = float(product.get("净铜重_g", 0) or 0)
+        total_g = float(product.get("产品总重_g", 0) or 0)
+        spec = f"净铜 {net_g:.1f}g · 总重 {total_g:.1f}g"
+        img_src = product_image_src(product)
+        with grid_cols[idx % len(grid_cols)]:
+            check = '<div class="product-check">✓</div>' if selected else ''
+            st.markdown(f"""
+            <div class="product-card {'selected' if selected else ''}" style="position:relative;">
+              {check}
+              <div class="product-img-wrap"><img class="product-img" src="{img_src}" alt="{html.escape(str(product['产品名称']))}" /></div>
+              <div class="product-name">{html.escape(str(product['产品名称']))}</div>
+              <div class="product-spec">{html.escape(spec)}</div>
+            </div><div class="product-hit-marker"></div>
+            """, unsafe_allow_html=True)
+            if st.button(f"选择 {product['产品名称']}", key=f"prod_hit_{selected_cat}_{idx}_{product['产品名称']}", use_container_width=True):
+                open_product(str(product["系列"]), str(product["产品名称"]))
 
 
 def render_product_specs(product: pd.Series) -> None:
-    st.markdown(
-        f"""
-        <div class="spec-strip">
-          <div class="spec-cell"><div class="sc-label">净铜重</div><div class="sc-val">{float(product['净铜重_g']):.1f}g</div><div class="sc-sub">总重 {float(product['产品总重_g']):.1f}g</div></div>
-          <div class="spec-cell"><div class="sc-label">加工+配件</div><div class="sc-val">¥{float(product['加工费_元']):.2f}</div><div class="sc-sub">配件 {float(product['配件重量_g']):.1f}g</div></div>
-          <div class="spec-cell"><div class="sc-label">利润</div><div class="sc-val">¥{float(product['利润_元']):.2f}</div><div class="sc-sub">{html.escape(str(product.get('系列', '—')))} 系列</div></div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    if "⚠" in str(product.get("总重是否已称量", "")):
-        st.markdown('<div class="warn-bar">产品总重为估算值，请向车间确认后更新 products.xlsx 以提高报价精度。</div>', unsafe_allow_html=True)
+    total_g = float(product.get("产品总重_g", 0) or 0)
+    accessory_g = float(product.get("配件重量_g", 0) or 0)
+    net_g = float(product.get("净铜重_g", 0) or 0)
+    st.markdown(f"""
+    <div class="spec-strip">
+      <div class="spec-cell"><div class="sc-label">产品总重</div><div class="sc-val">{total_g:.1f}g</div><div class="sc-sub">称量口径</div></div>
+      <div class="spec-cell"><div class="sc-label">配件重量</div><div class="sc-val">{accessory_g:.1f}g</div><div class="sc-sub">扣除非铜件</div></div>
+      <div class="spec-cell"><div class="sc-label">净铜重</div><div class="sc-val">{net_g:.1f}g</div><div class="sc-sub">报价核心参数</div></div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 def render_quote_controls() -> None:
-    st.markdown('<div class="controls-card"><div class="page-sub" style="margin-bottom:.7rem;">报价参数</div>', unsafe_allow_html=True)
-    col_a, col_b = st.columns(2, gap="small")
-    with col_a:
+    st.markdown('<div class="controls-card">', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns([1.15, 1.25, 1.0], gap="medium")
+    with c1:
         plating_options = list(PLATING_RATES.keys())
-        current_plating = st.session_state.plating if st.session_state.plating in plating_options else plating_options[0]
-        st.session_state.plating = st.selectbox("表面处理", plating_options, index=plating_options.index(current_plating), key="cfg_plating")
-    with col_b:
-        st.session_state.quantity = st.number_input("订单数量（只）", min_value=1, value=int(st.session_state.quantity), step=100, key="cfg_quantity")
-    col_c, col_d = st.columns(2, gap="small")
-    with col_c:
-        st.session_state.packaging = st.multiselect("包装附加", list(PACKAGING_FEES.keys()), default=st.session_state.packaging, key="cfg_packaging")
-    with col_d:
-        destination_options = list(FREIGHT_RATES.keys())
-        current_dest = st.session_state.destination if st.session_state.destination in destination_options else destination_options[0]
-        st.session_state.destination = st.selectbox("目的地", destination_options, index=destination_options.index(current_dest), key="cfg_destination")
+        st.session_state.plating = st.selectbox("电镀", plating_options, index=plating_options.index(st.session_state.plating) if st.session_state.plating in plating_options else 0)
+    with c2:
+        pack_options = list(PACKAGING_FEES.keys())
+        st.session_state.packaging = st.multiselect("包装", pack_options, default=st.session_state.packaging)
+    with c3:
+        st.session_state.quantity = st.number_input("订单数量", min_value=1, value=int(st.session_state.quantity), step=100)
+    destinations = list(FREIGHT_RATES.keys())
+    st.session_state.destination = st.selectbox("目的地", destinations, index=destinations.index(st.session_state.destination) if st.session_state.destination in destinations else 0)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> None:
+    st.markdown('<div class="quote-pane"><div class="quote-column-marker"></div>', unsafe_allow_html=True)
     if product is None:
-        title = "开始报价" if st.session_state.page == "home" else "选择产品"
-        desc = "先选择产品系列，然后选择具体产品。" if st.session_state.page == "home" else "点击中间任意产品卡片后，报价结果将在这里实时显示。"
-        st.markdown(
-            f"""
-            <div class="quote-card">
-              <div style="min-height:420px;display:flex;align-items:center;justify-content:center;text-align:center;">
-                <div>
-                  <div class="empty-icon">◆</div>
-                  <div style="font-size:1rem;font-weight:850;color:#111827;margin-bottom:8px;">{title}</div>
-                  <div style="font-size:.78rem;color:#667085;line-height:1.65;">{desc}</div>
-                </div>
-              </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.markdown("""<div class="quote-card empty-quote"><div><div class="empty-icon">◆</div><div class="panel-product">开始报价</div><div style="color:#667085;font-size:.78rem;">先选择产品系列，然后选择具体产品。</div></div></div>""", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         return
 
-    quote = calculate_quote(
-        product,
-        copper_price=params["copper_price"],
-        plating=st.session_state.plating,
-        packaging=st.session_state.packaging,
-        quantity=int(st.session_state.quantity),
-        destination=st.session_state.destination,
-        currency=params["currency"],
-        exchange_rate=params["exchange_rate"],
-        box_l=params["box_l"],
-        box_w=params["box_w"],
-        box_h=params["box_h"],
-        units_per_box=int(params["units_per_box"]),
+    quote = calculate_quote(product, params["copper_price"], st.session_state.plating, st.session_state.packaging, st.session_state.quantity, st.session_state.destination, params["currency"], params["exchange_rate"], params["box_l"], params["box_w"], params["box_h"], params["units_per_box"])
+    symbol = CURRENCY_SYMBOLS.get(params["currency"], params["currency"])
+    margin_cls = "mp-good" if quote["margin"] >= 8 else "mp-warn" if quote["margin"] >= 5 else "mp-danger"
+    cost_total = max(quote["rmb"], 0.0001)
+    cost_rows = []
+    cost_colors = {"原材料":"#F79009","加工配件":"#2E90FA","电镀":"#7A5AF8","包装":"#12B76A","运费":"#6172F3","利润":"#F04438"}
+    for name in ["原材料", "加工配件", "电镀", "包装", "运费", "利润"]:
+        val = float(quote.get(name, 0))
+        pct = val / cost_total * 100
+        cost_rows.append(f'<div class="cost-row"><div class="cost-dot" style="background:{cost_colors[name]};"></div><div class="cost-name">{name}</div><div class="cost-val">¥{val:.4f}</div><div class="cost-pct">{pct:.0f}%</div></div>')
+    formula = (
+        f"材料 = {quote['net_g']}g × {params['copper_price']} / 1,000,000\n"
+        f"RMB = 材料 + 加工配件 + 电镀 + 包装 + 运费 + 利润 = ¥{quote['rmb']:.4f}\n"
+        f"外币 = RMB / ({params['exchange_rate']} × {EXCHANGE_RATE_MARGIN}) = {symbol}{quote['fgn']:.4f}"
     )
-    currency = params["currency"]
-    symbol = CURRENCY_SYMBOLS.get(currency, "")
-    margin = float(quote["margin"])
-    if margin >= 15:
-        pill_class, trend = "mp-good", "↑"
-    elif margin >= 8:
-        pill_class, trend = "mp-warn", "→"
-    else:
-        pill_class, trend = "mp-danger", "↓"
-
-    safe_product_name = html.escape(str(product["产品名称"]))
-    st.markdown(
-        f"""
-        <div class="quote-card">
-          <div class="panel-kicker"><span>实时报价</span><span><span class="dot dot-green"></span> 实时汇率已应用</span></div>
-          <div class="panel-product">{safe_product_name}</div>
-          <div class="price-hero">
-            <div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{currency} / 只</div></div>
-            <div class="ph-amount">{symbol}{quote['fgn']:.4f}</div>
-            <div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div>
-            <div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']} · 含 2% 安全边际</div>
-          </div>
-          <div class="metric-grid">
-            <div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div>
-            <div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div>
-          </div>
-          <div class="order-total">
-            <div class="ph-row"><div class="ot-label">订单总价</div><div style="color:#667085;font-size:.66rem;font-family:JetBrains Mono,monospace;white-space:nowrap;">{int(st.session_state.quantity):,} 只</div></div>
-            <div class="ot-val">{symbol}{quote['total']:,.2f}</div>
-            <div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity):,} {currency}</div>
-          </div>
-          <div class="margin-row"><span class="margin-label">利润率</span><span class="margin-pill {pill_class}">{trend} {margin}%</span></div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    with st.expander("成本构成明细", expanded=False, icon=":material/format_list_bulleted:"):
-        cost_items = [
-            ("原材料", quote["原材料"], "#6D5DFB"),
-            ("加工+配件", quote["加工配件"], "#12B76A"),
-            ("电镀", quote["电镀"], "#F79009"),
-            ("包装", quote["包装"], "#7A5AF8"),
-            ("运费", quote["运费"], "#2E90FA"),
-            ("利润", quote["利润"], "#F04438"),
-        ]
-        for name, value, color in cost_items:
-            pct = round(value / quote["rmb"] * 100, 1) if quote["rmb"] else 0
-            st.markdown(
-                f"<div class='cost-row'><span class='cost-dot' style='background:{color}'></span><span class='cost-name'>{name}</span><span class='cost-val'>¥{value:.3f}</span><span class='cost-pct'>{pct}%</span></div>",
-                unsafe_allow_html=True,
-            )
-
-    with st.expander("查看计算公式", expanded=False, icon=":material/functions:"):
-        formula = (
-            f"原材料 = {quote['net_g']}g × {params['copper_price']:,.0f} / 1,000,000 = ¥{quote['原材料']}\n"
-            f"电镀   = {quote['net_g']}g × {PLATING_RATES.get(st.session_state.plating, 0):,} / 1,000,000 = ¥{quote['电镀']}\n"
-            f"运费   = {FREIGHT_RATES.get(st.session_state.destination, 0)} $/CBM × {quote['cbm']} CBM / {params['units_per_box']} × {params['exchange_rate']} = ¥{quote['运费']}\n"
-            f"{'─' * 30}\n"
-            f"RMB    = {quote['原材料']} + {quote['加工配件']} + {quote['电镀']} + {quote['包装']} + {quote['运费']} + {quote['利润']} = ¥{quote['rmb']}\n"
-            f"{currency} = ¥{quote['rmb']} / {quote['eff_rate']} = {symbol}{quote['fgn']}"
-        )
-        st.markdown(f"<div class='formula'>{formula}</div>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="quote-card">
+      <div class="panel-kicker"><span>QUOTE SUMMARY</span><span>{params['currency']} / 只</span></div>
+      <div class="panel-product">{html.escape(str(product['产品名称']))}</div>
+      <div class="price-hero"><div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{params['currency']} / 只</div></div><div class="ph-amount">{symbol}{quote['fgn']:.4f}</div><div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div><div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}，含安全边际。</div></div>
+      <div class="metric-grid"><div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div><div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div></div>
+      <div class="order-total"><div class="ot-label">订单总价 <span style="float:right;color:#98A2B3;">{int(st.session_state.quantity)} 只</span></div><div class="ot-val">{symbol}{quote['total']:,.2f}</div><div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity)} {params['currency']}</div></div>
+      <div class="margin-row"><div class="margin-label">利润率</div><div class="margin-pill {margin_cls}">+ {quote['margin']:.1f}%</div></div>
+      {''.join(cost_rows)}
+    </div>
+    """, unsafe_allow_html=True)
+    with st.expander("查看计算公式", expanded=False):
+        st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> dict[str, Any]:
-    """渲染生产三段式工作台：左参数与导航 / 中间产品 / 右报价。"""
     st.markdown('<div class="layout-marker"></div>', unsafe_allow_html=True)
-    left_col, mid_col, right_col = st.columns([1, 2.3, 1.4], gap="large")
-
+    left_col, mid_col, right_col = st.columns([1.1, 3.0, 1.4], gap="large")
     with left_col:
         params = render_sidebar_controls()
-
+    product = get_selected_product(df)
     with mid_col:
         st.markdown('<div class="workbench-pane">', unsafe_allow_html=True)
-        if st.session_state.page == "home" or not st.session_state.selected_cat:
+        if st.session_state.page == "home":
             render_category_selector(df)
         else:
+            render_breadcrumb(product)
             render_product_grid(df)
-            selected = get_selected_product(df)
-            if selected is not None:
-                render_product_specs(selected)
+            if product is not None:
+                render_product_specs(product)
                 render_quote_controls()
         st.markdown('</div>', unsafe_allow_html=True)
-
     with right_col:
-        st.markdown('<div class="quote-column-marker"></div><div class="quote-pane">', unsafe_allow_html=True)
-        render_quote_panel(get_selected_product(df), params)
-        st.markdown('</div>', unsafe_allow_html=True)
+        render_quote_panel(product, params)
     return params
 
 
 def render_bottom_tools(df: pd.DataFrame, params: dict[str, Any]) -> None:
-    """渲染批量报价、产品数据库和 Excel 模板。"""
     st.markdown('<div class="tool-card">', unsafe_allow_html=True)
-    tab_batch, tab_data, tab_template = st.tabs(["批量报价", "产品数据库", "Excel 模板"])
-
+    tab_batch, tab_db, tab_template = st.tabs(["批量报价", "产品数据库", "Excel 模板"])
     with tab_batch:
         st.markdown('<p class="page-sub">以当前全局参数对所有产品生成报价汇总表。</p>', unsafe_allow_html=True)
-        col_1, col_2, col_3 = st.columns(3, gap="small")
-        with col_1:
-            batch_plating = st.selectbox("电镀", list(PLATING_RATES.keys()), key="batch_plating")
-        with col_2:
-            batch_destination = st.selectbox("目的地", list(FREIGHT_RATES.keys()), key="batch_destination")
-        with col_3:
-            batch_quantity = st.number_input("数量", min_value=1, value=500, key="batch_quantity")
-        if st.button("生成全产品报价表", key="batch_generate", icon=":material/table_view:"):
+        c1, c2, c3 = st.columns([1.0, 1.2, 1.0], gap="medium")
+        with c1:
+            plating = st.selectbox("电镀", list(PLATING_RATES.keys()), key="batch_plating")
+        with c2:
+            destination = st.selectbox("目的地", list(FREIGHT_RATES.keys()), key="batch_destination")
+        with c3:
+            qty = st.number_input("数量", min_value=1, value=int(st.session_state.quantity), step=100, key="batch_qty")
+        if st.button("生成全产品报价表", use_container_width=True):
             rows = []
-            for _, product in df.iterrows():
-                quote = calculate_quote(
-                    product,
-                    copper_price=params["copper_price"],
-                    plating=batch_plating,
-                    packaging=[],
-                    quantity=int(batch_quantity),
-                    destination=batch_destination,
-                    currency=params["currency"],
-                    exchange_rate=params["exchange_rate"],
-                    box_l=params["box_l"],
-                    box_w=params["box_w"],
-                    box_h=params["box_h"],
-                    units_per_box=int(params["units_per_box"]),
-                )
-                rows.append(
-                    {
-                        "产品名称": product["产品名称"],
-                        "系列": product["系列"],
-                        "净铜重(g)": product["净铜重_g"],
-                        "原材料(元)": quote["原材料"],
-                        "加工+配件(元)": quote["加工配件"],
-                        "电镀(元)": quote["电镀"],
-                        "运费(元)": quote["运费"],
-                        "利润(元)": quote["利润"],
-                        "RMB单价": quote["rmb"],
-                        f"{params['currency']}单价": quote["fgn"],
-                        "利润率(%)": quote["margin"],
-                    }
-                )
-            batch_df = pd.DataFrame(rows)
-            st.dataframe(batch_df, use_container_width=True, hide_index=True)
-            csv = batch_df.to_csv(index=False).encode("utf-8-sig")
-            st.download_button("下载 CSV", data=csv, file_name=f"阀芯报价_{datetime.now().strftime('%Y%m%d_%H%M')}.csv", mime="text/csv")
-
-    with tab_data:
-        display_cols = ["产品名称", "系列", "产品总重_g", "配件重量_g", "净铜重_g", "加工费_元", "利润_元"]
-        if "图片路径" in df.columns:
-            display_cols.append("图片路径")
-        if "总重是否已称量" in df.columns:
-            display_cols.append("总重是否已称量")
-        st.dataframe(df[display_cols], use_container_width=True, hide_index=True)
-
+            for _, row in df.iterrows():
+                q = calculate_quote(row, params["copper_price"], plating, [], int(qty), destination, params["currency"], params["exchange_rate"], params["box_l"], params["box_w"], params["box_h"], params["units_per_box"])
+                rows.append({"产品名称": row["产品名称"], "系列": row["系列"], "净铜重(g)": q["net_g"], "原材料(元)": q["原材料"], "加工+配件(元)": q["加工配件"], "电镀(元)": q["电镀"], "运费(元)": q["运费"], "利润(元)": q["利润"], "RMB单价": q["rmb"], f"{params['currency']}单价": q["fgn"], "利润率(%)": q["margin"]})
+            result_df = pd.DataFrame(rows)
+            st.dataframe(result_df, use_container_width=True, hide_index=True)
+            out = io.BytesIO()
+            result_df.to_excel(out, index=False)
+            st.download_button("下载报价表 Excel", data=out.getvalue(), file_name=f"成宁阀芯报价_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    with tab_db:
+        st.dataframe(df, use_container_width=True, hide_index=True)
     with tab_template:
-        st.markdown('<p class="page-sub">下载模板后只需新增或修改 Excel 行，网页会按表格内容动态渲染产品卡片。</p>', unsafe_allow_html=True)
-        template = pd.DataFrame(
-            {
-                "产品名称": ["示例产品A", "示例产品B"],
-                "系列": ["快开", "慢开"],
-                "产品总重_g": [65, 50],
-                "配件重量_g": [7, 2],
-                "净铜重_g": [58, 48],
-                "加工费_元": [0.75, 0.60],
-                "利润_元": [0.50, 0.40],
-                "图片路径": ["data/images/示例产品A.png", ""],
-                "总重是否已称量": ["已称量", "估算值"],
-            }
-        )
-        buffer = io.BytesIO()
-        template.to_excel(buffer, index=False)
-        st.download_button(
-            "下载 Excel 模板",
-            data=buffer.getvalue(),
-            file_name="产品明细表_模板.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
+        template = pd.DataFrame({"产品名称":["示例产品A","示例产品B"],"系列":["快开","慢开"],"产品总重_g":[65,50],"配件重量_g":[7,2],"净铜重_g":[58,48],"加工费_元":[0.75,0.60],"利润_元":[0.50,0.40],"图片路径":["data/images/示例产品A.png", ""],"总重是否已称量":["已称量","估算值"]})
+        buffer = io.BytesIO(); template.to_excel(buffer, index=False)
+        st.download_button("下载 Excel 模板", data=buffer.getvalue(), file_name="产品明细表_模板.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         st.dataframe(template, use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_footer() -> None:
-    st.markdown(
-        f"<div style='text-align:center;color:#98A2B3;font-size:.66rem;padding:1.2rem 0;'>ValveCore Pricing {APP_VERSION} · 产品参数来自 ./data/products.xlsx · 汇率含 {int((1-EXCHANGE_RATE_MARGIN)*100)}% 安全边际</div>",
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<div style='text-align:center;color:#98A2B3;font-size:.66rem;padding:1.2rem 0;'>ValveCore Pricing {APP_VERSION} · 产品参数来自 ./data/products.xlsx · 汇率含 {int((1-EXCHANGE_RATE_MARGIN)*100)}% 安全边际</div>", unsafe_allow_html=True)
 
 
-# ═══════════════════════════════════════════════════════════
-# 应用入口
-# ═══════════════════════════════════════════════════════════
 def main() -> None:
     inject_css()
     init_session_state()
     require_login()
-
     data_file = st.session_state.custom_excel_path or str(DEFAULT_PRODUCTS_FILE)
     try:
         products_df = load_products(data_file)
     except Exception as exc:
         st.error(f"产品数据库加载失败：{exc}")
         st.stop()
-
     ensure_valid_selection(products_df)
-    header_params = {
-        "copper_price": st.session_state.copper_price,
-        "currency": st.session_state.currency,
-        "exchange_rate": st.session_state.exchange_rate,
-    }
+    header_params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate}
     render_header(products_df, header_params)
-    # 左侧参数栏会返回最新参数，因此工作台主体在 render_workbench 内统一渲染。
-    params = {
-        "copper_price": st.session_state.copper_price,
-        "currency": st.session_state.currency,
-        "exchange_rate": st.session_state.exchange_rate,
-        "box_l": st.session_state.box_l,
-        "box_w": st.session_state.box_w,
-        "box_h": st.session_state.box_h,
-        "units_per_box": st.session_state.units_per_box,
-    }
+    params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate, "box_l": st.session_state.box_l, "box_w": st.session_state.box_w, "box_h": st.session_state.box_h, "units_per_box": st.session_state.units_per_box}
     params = render_workbench(products_df, params)
     render_bottom_tools(products_df, params)
     render_footer()

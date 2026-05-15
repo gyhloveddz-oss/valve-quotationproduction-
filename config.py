@@ -5,7 +5,7 @@
 账号密码必须通过 Streamlit 的 st.secrets 配置。
 """
 
-APP_VERSION = "v9-fixed-header-home-cleanup"
+APP_VERSION = "v10-structural-workbench"
 APP_NAME = "成宁阀芯报价工作台"
 APP_SUBTITLE = "ValveCore Pricing · Streamlit Cloud Production"
 
@@ -69,6 +69,10 @@ OPTIONAL_PRODUCT_COLUMNS = [
 ]
 
 CHANGELOG = [
+    "v10：结构级重写为固定顶部页眉 + st.columns([1.1, 3.0, 1.4]) 三栏生产力工作台，右侧报价栏 sticky top:74px。",
+    "v10：重构面包屑与系列/产品导航，全部通过 st.session_state.page 状态机切换，继续禁止 st.page_link 或 URL 跳转。",
+    "v10：产品卡片改为图片、名称、规格一体化卡片，并通过透明点击层实现整卡点击；图片失效时自动回退 SVG 占位图。",
+    "v10：重写报价面板、输入控件与灰白视觉系统，数量输入保留手动编辑能力，金额使用 28px JetBrains Mono 左对齐展示。",
     "v9：顶部页眉改为 fixed 固定在视口最上方，并为主内容增加顶部间距，滚动时页眉不再离开屏幕。",
     "v9：首页中间区域移除‘请选择左侧产品系列’大空卡，只保留产品系列入口，降低视觉噪音。",
     "v9：快开/慢开系列入口卡片放大并更新文案，作为首页核心入口展示。",
