@@ -176,44 +176,62 @@ div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploa
 .page-title { font-size:1.05rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
 .page-sub { color:var(--muted); font-size:.78rem; line-height:1.65; margin-bottom:1rem; }
 .breadcrumb-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
-div[data-testid="stVerticalBlock"]:has(.crumb-marker) .stButton > button { min-height:32px !important; padding:6px 10px !important; border-radius:9px !important; font-size:.72rem !important; box-shadow:none !important; }
+div[data-testid="stMarkdownContainer"]:has(.crumb-marker) + div[data-testid="stButton"] > button,
+div[data-testid="stMarkdownContainer"]:has(.crumb-marker) + div.stButton > button,
+div[data-testid="stMarkdownContainer"]:has(.crumb-marker) ~ div[data-testid="stButton"] > button { min-height:32px !important; padding:6px 10px !important; border-radius:9px !important; font-size:.72rem !important; box-shadow:none !important; }
 .crumb-current { display:inline-flex; min-height:32px; align-items:center; padding:7px 10px; border-radius:9px; border:1px solid var(--border); background:var(--purple-soft); color:var(--purple); font-size:.72rem; font-weight:850; }
 .crumb-sep { display:inline-flex; align-items:center; min-height:32px; color:#98A2B3; font-size:.78rem; }
 
 
 
 /* 首页系列卡片：整卡即按钮，不再额外放置小按钮 */
-div[data-testid="stVerticalBlock"]:has(.cat-card-marker) .stButton > button {
+div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div[data-testid="stButton"] > button,
+div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div.stButton > button,
+div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) ~ div[data-testid="stButton"] > button {
   width:100% !important; min-height:178px !important; padding:24px !important; text-align:left !important; justify-content:flex-start !important; align-items:flex-start !important;
   white-space:pre-line !important; line-height:1.58 !important; border-radius:var(--radius-card) !important;
   background:var(--bg-panel) !important; border:1px solid var(--border) !important; box-shadow:var(--shadow-soft) !important;
   color:var(--text) !important; font-size:.86rem !important;
 }
-div[data-testid="stVerticalBlock"]:has(.cat-card-marker) .stButton > button:hover { border-color:var(--purple) !important; box-shadow:0 16px 34px rgba(109,93,251,.12) !important; background:#FFFFFF !important; }
+div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div[data-testid="stButton"] > button:hover,
+div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div.stButton > button:hover,
+div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) ~ div[data-testid="stButton"] > button:hover { border-color:var(--purple) !important; box-shadow:0 16px 34px rgba(109,93,251,.12) !important; background:#FFFFFF !important; }
 
 /* 产品 Grid 容器：必须 padding，防止向左溢出遮挡边栏 */
 .products-shell { background:var(--bg-panel); border:1px solid var(--border); border-radius:22px; padding:18px; box-shadow:var(--shadow-soft); overflow:hidden; }
 .products-grid-note { color:var(--muted); font-size:.72rem; margin-bottom:12px; }
 
 /* 产品小卡片：原生整卡按钮，避免透明覆盖层导致后排点击失效 */
-div[data-testid="stVerticalBlock"]:has(.prod-card-marker) .stButton > button {
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button {
   width:100% !important; min-height:172px !important; padding:16px 12px 14px !important; display:flex !important;
   align-items:flex-end !important; justify-content:center !important; position:relative !important; text-align:center !important;
   white-space:pre-line !important; line-height:1.28 !important; color:var(--text) !important; font-size:.78rem !important; font-weight:850 !important;
   background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 70%,#F7F8FB 100%) !important;
   border:1px solid var(--border) !important; border-radius:18px !important; box-shadow:var(--shadow-soft) !important; cursor:pointer !important; overflow:hidden !important;
 }
-div[data-testid="stVerticalBlock"]:has(.prod-card-marker) .stButton > button::before {
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button::before,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button::before,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button::before {
   content:""; position:absolute; top:20px; left:50%; transform:translateX(-50%); width:92px; height:92px; border-radius:50%;
   background:radial-gradient(circle at center,#E9FBF1 0%,#E9FBF1 54%,transparent 55%), linear-gradient(135deg,#DFF7E9,#F3FFF8);
   border:1px solid #D7F0E1;
 }
-div[data-testid="stVerticalBlock"]:has(.prod-card-marker) .stButton > button::after {
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button::after,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button::after,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button::after {
   content:"◇"; position:absolute; top:54px; left:50%; transform:translateX(-50%); color:#15A46A; font-size:1.45rem; font-weight:400;
 }
-div[data-testid="stVerticalBlock"]:has(.prod-card-marker) .stButton > button:hover { border-color:var(--purple) !important; box-shadow:0 18px 34px rgba(109,93,251,.14) !important; transform:translateY(-2px); }
-div[data-testid="stVerticalBlock"]:has(.prod-card-marker.selected) .stButton > button { border:2px solid var(--purple) !important; box-shadow:0 0 0 4px rgba(109,93,251,.10),0 18px 36px rgba(109,93,251,.16) !important; }
-div[data-testid="stVerticalBlock"]:has(.prod-card-marker.selected) .stButton > button::after { content:"✓"; top:14px; left:auto; right:14px; transform:none; width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:999px; background:var(--purple); color:#fff; font-size:.78rem; font-weight:900; }
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div[data-testid="stButton"] > button:hover,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) + div.stButton > button:hover,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker) ~ div[data-testid="stButton"] > button:hover { border-color:var(--purple) !important; box-shadow:0 18px 34px rgba(109,93,251,.14) !important; transform:translateY(-2px); }
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div[data-testid="stButton"] > button,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div.stButton > button,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) ~ div[data-testid="stButton"] > button { border:2px solid var(--purple) !important; box-shadow:0 0 0 4px rgba(109,93,251,.10),0 18px 36px rgba(109,93,251,.16) !important; }
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div[data-testid="stButton"] > button::after,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) + div.stButton > button::after,
+div[data-testid="stMarkdownContainer"]:has(.prod-card-marker.selected) ~ div[data-testid="stButton"] > button::after { content:"✓"; top:14px; left:auto; right:14px; transform:none; width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:999px; background:var(--purple); color:#fff; font-size:.78rem; font-weight:900; }
 
 /* 规格条和中间报价参数 */
 .spec-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
