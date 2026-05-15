@@ -5,7 +5,7 @@
 账号密码必须通过 Streamlit 的 st.secrets 配置。
 """
 
-APP_VERSION = "v6-nav-card-fix"
+APP_VERSION = "v7-saas-layout-fix"
 APP_NAME = "成宁阀芯报价工作台"
 APP_SUBTITLE = "ValveCore Pricing · Streamlit Cloud Production"
 
@@ -69,6 +69,10 @@ OPTIONAL_PRODUCT_COLUMNS = [
 ]
 
 CHANGELOG = [
+    "v7：按图三 SaaS 工作台重构为 st.columns([1, 2.3, 1.4]) 三列布局，右侧报价栏 sticky 置顶。",
+    "v7：路由统一改为 st.session_state.page（home/collection/product），禁止外部页面跳转与重复登录。",
+    "v7：移除左侧重复系列导航，首页和系列页均通过整卡按钮与面包屑完成内部切换。",
+    "v7：报价金额改为 28px 等宽字体左对齐，上传区居中，数量输入框保持原生可编辑。",
     "v6：顶部工作台导航改为图4式窄条样式，减少大块导航占位。",
     "v6：快开/慢开系列内产品小卡片改为原生整卡按钮，后排卡片也可直接点击。",
     "v5：修复首页系列卡片点击无响应，改为可见大卡片按钮并保留会话状态导航。",

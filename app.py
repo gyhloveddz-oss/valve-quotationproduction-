@@ -2,8 +2,8 @@
 成宁阀芯报价工作台 · Streamlit Cloud 生产版
 
 本文件是面向 Streamlit Cloud 的完整单文件入口。设计重点如下：
-1. 页面主工作区强制使用 st.columns([1, 2.2, 1.3])，保证左侧参数栏、中间产品矩阵、右侧报价栏比例稳定。
-2. 所有业务页面切换均由 st.session_state.view 管理，禁止 st.page_link 和 URL 跳转，避免云端重复登录。
+1. 页面主工作区强制使用 st.columns([1, 2.3, 1.4])，保证左侧参数栏、中间产品矩阵、右侧报价栏比例稳定。
+2. 所有业务页面切换均由 st.session_state.page 管理，禁止任何外部页面跳转，避免云端重复登录。
 3. 面包屑、系列卡片、产品卡片均使用 st.button 触发内部状态切换并 st.rerun()。
 4. 产品与成本参数只从 data/products.xlsx 读取；账号密码只从 Streamlit Secrets 读取。
 """
@@ -69,7 +69,7 @@ def inject_css() -> None:
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=block');
 
 :root {
-  --bg-base:#F8F9FB;
+  --bg-base:#F8F9FA;
   --bg-panel:#FFFFFF;
   --bg-soft:#F3F5F8;
   --border:#E6E9EF;
@@ -131,15 +131,15 @@ label, [data-testid="stWidgetLabel"] { color:var(--muted) !important; font-weigh
 .dot-green { background:var(--green); box-shadow:0 0 0 3px rgba(18,183,106,.11); }
 .dot-yellow { background:var(--yellow); box-shadow:0 0 0 3px rgba(247,144,9,.11); }
 
-/* 主三栏：用户指定比例 st.columns([1, 2.2, 1.3]) */
+	/* 主三栏：用户指定比例 st.columns([1, 2.3, 1.4]) */
 .layout-marker { display:none; }
 div[data-testid="stHorizontalBlock"]:has(.layout-marker) { align-items:flex-start !important; gap:1.25rem !important; }
 .left-pane, .workbench-pane, .quote-pane { width:100%; max-width:100%; min-width:0; }
 .left-pane { padding-right:.1rem; }
 .workbench-pane { padding:0 .45rem; overflow:hidden; }
 .quote-pane { min-width:320px; padding-left:.1rem; }
-div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky; top:68px; align-self:flex-start; min-width:320px !important; overflow:visible !important; }
-.quote-column-marker, .cat-card-marker, .prod-card-marker, .crumb-marker, .side-nav-marker { display:none; }
+div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky !important; top:1rem !important; align-self:start !important; min-width:320px !important; overflow:visible !important; }
+.quote-column-marker, .cat-card-marker, .prod-card-marker, .crumb-marker { display:none; }
 
 /* 左侧参数栏 */
 .side-panel { background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius-card); padding:16px; box-shadow:var(--shadow-soft); }
@@ -180,9 +180,7 @@ div[data-testid="stVerticalBlock"]:has(.crumb-marker) .stButton > button { min-h
 .crumb-current { display:inline-flex; min-height:32px; align-items:center; padding:7px 10px; border-radius:9px; border:1px solid var(--border); background:var(--purple-soft); color:var(--purple); font-size:.72rem; font-weight:850; }
 .crumb-sep { display:inline-flex; align-items:center; min-height:32px; color:#98A2B3; font-size:.78rem; }
 
-/* 系列导航按钮 */
-div[data-testid="stVerticalBlock"]:has(.side-nav-marker) .stButton > button { min-height:48px !important; margin-bottom:8px !important; text-align:left !important; justify-content:flex-start !important; padding:10px 12px !important; }
-div[data-testid="stVerticalBlock"]:has(.side-nav-marker.selected) .stButton > button { border-color:var(--purple) !important; background:var(--purple-soft) !important; color:var(--purple) !important; }
+
 
 /* 首页系列卡片：整卡即按钮，不再额外放置小按钮 */
 div[data-testid="stVerticalBlock"]:has(.cat-card-marker) .stButton > button {
@@ -236,7 +234,7 @@ div[data-testid="stVerticalBlock"]:has(.prod-card-marker.selected) .stButton > b
 .ph-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .ph-label, .ot-label, .mt-label { color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.04em; }
 .ph-currency { color:#667085; font-size:.72rem; white-space:nowrap; }
-.ph-amount { margin-top:8px; color:#101828; font-family:var(--mono) !important; font-size:2.25rem; font-weight:850; letter-spacing:-.06em; line-height:1; white-space:nowrap; overflow:visible; }
+.ph-amount { margin-top:8px; color:#101828; font-family:var(--mono) !important; font-size:28px; font-weight:850; letter-spacing:-.04em; line-height:1.08; white-space:nowrap; overflow:visible; text-align:left; }
 .ph-rmb { margin-top:7px; color:#344054; font-family:var(--mono) !important; font-size:.88rem; font-weight:800; white-space:nowrap; }
 .ph-sub { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); color:#667085; font-size:.66rem; line-height:1.55; }
 .metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; }
@@ -266,7 +264,7 @@ div[data-testid="stVerticalBlock"]:has(.prod-card-marker.selected) .stButton > b
 
 @media (max-width: 1280px) {
   .quote-pane, .quote-card, div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { min-width:300px !important; }
-  .ph-amount { font-size:1.95rem; }
+	  .ph-amount { font-size:28px; }
 }
 @media (max-width: 980px) {
   div[data-testid="stHorizontalBlock"]:has(.layout-marker) { flex-direction:column !important; }
@@ -509,7 +507,7 @@ def calculate_quote(
 def init_session_state() -> None:
     defaults = {
         "authenticated": False,
-        "view": "all",  # all / collection / product
+        "page": "home",  # home / collection / product
         "selected_cat": None,
         "selected_prod": None,
         "copper_price": DEFAULT_COPPER_PRICE,
@@ -527,21 +525,24 @@ def init_session_state() -> None:
         "box_h": 25.0,
         "units_per_box": 200,
     }
+    legacy_view = st.session_state.pop("view", None)
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
-    if st.session_state.view not in {"all", "collection", "product"}:
-        st.session_state.view = "all"
+    if legacy_view and st.session_state.page == "home":
+        st.session_state.page = "home" if legacy_view == "all" else legacy_view
+    if st.session_state.page not in {"home", "collection", "product"}:
+        st.session_state.page = "home"
 
 
-def reset_to_all() -> None:
-    st.session_state.view = "all"
+def reset_to_home() -> None:
+    st.session_state.page = "home"
     st.session_state.selected_cat = None
     st.session_state.selected_prod = None
     st.rerun()
 
 
-def open_collection(category: str, df: pd.DataFrame, select_first: bool = True) -> None:
-    st.session_state.view = "collection"
+def open_collection(category: str, df: pd.DataFrame, select_first: bool = False) -> None:
+    st.session_state.page = "collection"
     st.session_state.selected_cat = category
     if select_first:
         cat_df = df[df["系列"].astype(str) == str(category)].reset_index(drop=True)
@@ -550,7 +551,7 @@ def open_collection(category: str, df: pd.DataFrame, select_first: bool = True) 
 
 
 def open_product(category: str, product_name: str) -> None:
-    st.session_state.view = "product"
+    st.session_state.page = "product"
     st.session_state.selected_cat = category
     st.session_state.selected_prod = product_name
     st.rerun()
@@ -563,13 +564,13 @@ def ensure_valid_selection(df: pd.DataFrame) -> None:
     if st.session_state.selected_cat and st.session_state.selected_cat not in categories:
         st.session_state.selected_cat = None
         st.session_state.selected_prod = None
-        st.session_state.view = "all"
+        st.session_state.page = "home"
     if st.session_state.selected_prod and st.session_state.selected_prod not in products:
         st.session_state.selected_prod = None
         if st.session_state.selected_cat:
-            st.session_state.view = "collection"
+            st.session_state.page = "collection"
         else:
-            st.session_state.view = "all"
+            st.session_state.page = "home"
 
 
 # ═══════════════════════════════════════════════════════════
@@ -725,18 +726,18 @@ def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
 
 def render_series_navigation(df: pd.DataFrame) -> None:
     st.markdown('<div class="page-title">系列导航</div><div class="page-sub">点击系列后，中间区域显示产品卡片。</div>', unsafe_allow_html=True)
-    all_selected = st.session_state.view == "all"
+    all_selected = st.session_state.page == "home"
     st.markdown(f'<div class="side-nav-marker {"selected" if all_selected else ""}"></div>', unsafe_allow_html=True)
     if st.button("所有系列", key="nav_all", use_container_width=True):
-        reset_to_all()
+        reset_to_home()
 
     categories = list(df["系列"].dropna().astype(str).unique())
     for idx, category in enumerate(categories):
         count = int((df["系列"].astype(str) == str(category)).sum())
-        selected = st.session_state.selected_cat == category and st.session_state.view in {"collection", "product"}
+        selected = st.session_state.selected_cat == category and st.session_state.page in {"collection", "product"}
         st.markdown(f'<div class="side-nav-marker {"selected" if selected else ""}"></div>', unsafe_allow_html=True)
         if st.button(f"{category}系列 · {count}款", key=f"nav_cat_{idx}_{category}", use_container_width=True):
-            open_collection(category, df, select_first=True)
+            open_collection(category, df, select_first=False)
 
 
 def render_breadcrumb(df: pd.DataFrame, product: pd.Series | None = None) -> None:
@@ -746,14 +747,14 @@ def render_breadcrumb(df: pd.DataFrame, product: pd.Series | None = None) -> Non
     with crumb_cols[0]:
         st.markdown('<div class="crumb-marker"></div>', unsafe_allow_html=True)
         if st.button("所有系列", key="crumb_all", use_container_width=True):
-            reset_to_all()
+            reset_to_home()
     with crumb_cols[1]:
         st.markdown('<span class="crumb-sep">/</span>', unsafe_allow_html=True)
     with crumb_cols[2]:
         if selected_cat:
             st.markdown('<div class="crumb-marker"></div>', unsafe_allow_html=True)
             if st.button(f"{selected_cat}系列", key="crumb_collection", use_container_width=True):
-                st.session_state.view = "collection"
+                st.session_state.page = "collection"
                 st.rerun()
         else:
             st.markdown('<span class="crumb-current">未选系列</span>', unsafe_allow_html=True)
@@ -778,7 +779,7 @@ def render_category_selector(df: pd.DataFrame) -> None:
             st.markdown('<div class="cat-card-marker"></div>', unsafe_allow_html=True)
             card_label = f"{icon_text}\n\n{category}系列\n\n来自 products.xlsx 的动态产品系列。新增系列后这里会自动出现入口。\n\n◆ {count} 款产品"
             if st.button(card_label, key=f"cat_card_{idx}_{category}", use_container_width=True):
-                open_collection(category, df, select_first=True)
+                open_collection(category, df, select_first=False)
 
 
 def get_selected_product(df: pd.DataFrame) -> pd.Series | None:
@@ -796,7 +797,7 @@ def render_product_grid(df: pd.DataFrame) -> None:
         return
 
     selected_product = get_selected_product(df)
-    render_breadcrumb(df, selected_product if st.session_state.view == "product" else None)
+    render_breadcrumb(df, selected_product if st.session_state.page == "product" else None)
     st.markdown('<div class="products-shell">', unsafe_allow_html=True)
     st.markdown(f'<div class="products-grid-note">当前系列：<b>{html.escape(str(selected_cat))}</b>。点击任意产品卡片将在右侧刷新报价，不打开新网页。</div>', unsafe_allow_html=True)
 
@@ -868,8 +869,8 @@ def render_quote_controls() -> None:
 
 def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> None:
     if product is None:
-        title = "开始报价" if st.session_state.view == "all" else "选择产品"
-        desc = "先选择产品系列，然后选择具体产品。" if st.session_state.view == "all" else "点击中间任意产品卡片后，报价结果将在这里实时显示。"
+        title = "开始报价" if st.session_state.page == "home" else "选择产品"
+        desc = "先选择产品系列，然后选择具体产品。" if st.session_state.page == "home" else "点击中间任意产品卡片后，报价结果将在这里实时显示。"
         st.markdown(
             f"""
             <div class="quote-card">
@@ -968,18 +969,14 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
 def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> dict[str, Any]:
     """渲染生产三段式工作台：左参数与导航 / 中间产品 / 右报价。"""
     st.markdown('<div class="layout-marker"></div>', unsafe_allow_html=True)
-    left_col, mid_col, right_col = st.columns([1, 2.2, 1.3], gap="large")
+    left_col, mid_col, right_col = st.columns([1, 2.3, 1.4], gap="large")
 
     with left_col:
         params = render_sidebar_controls()
-        st.markdown('<div style="height:14px"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="side-panel">', unsafe_allow_html=True)
-        render_series_navigation(df)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with mid_col:
         st.markdown('<div class="workbench-pane">', unsafe_allow_html=True)
-        if st.session_state.view == "all" or not st.session_state.selected_cat:
+        if st.session_state.page == "home" or not st.session_state.selected_cat:
             render_category_selector(df)
             render_product_empty_state(df)
         else:
