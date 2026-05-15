@@ -135,15 +135,19 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary { justify-co
 .cat-title { font-size:1.08rem; font-weight:700; margin-bottom:.4rem; }
 .cat-desc { color:var(--subtle); font-size:.82rem; line-height:1.65; }
 .cat-badge { display:inline-flex; margin-top:1rem; padding:3px 10px; border:1px solid rgba(165,243,252,.25); border-radius:999px; color:var(--cyan); font-size:.72rem; background:rgba(165,243,252,.08); }
-.cat-click-marker, .prod-click-marker { display:none; }
-div[data-testid="stVerticalBlock"]:has(.cat-click-marker), div[data-testid="stVerticalBlock"]:has(.prod-click-marker) { position:relative; }
-div[data-testid="stVerticalBlock"]:has(.cat-click-marker) .stButton,
+.cat-click-marker, .prod-click-marker, .cat-button-marker { display:none; }
+div[data-testid="stVerticalBlock"]:has(.cat-button-marker) .stButton > button,
+div[data-testid="stVerticalBlock"]:has(.cat-button-marker) div[data-testid="stButton"] > button {
+  width:100% !important; min-height:150px !important; padding:22px !important; justify-content:flex-start !important; align-items:flex-start !important; text-align:left !important;
+  white-space:pre-line !important; line-height:1.7 !important; color:#E5E7EB !important; background:rgba(22,24,29,.84) !important;
+  border:1px solid var(--border) !important; border-radius:var(--radius-card) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 28px rgba(0,0,0,.28) !important;
+}
+div[data-testid="stVerticalBlock"]:has(.cat-button-marker) .stButton > button:hover,
+div[data-testid="stVerticalBlock"]:has(.cat-button-marker) div[data-testid="stButton"] > button:hover { border-color:#7C3AED !important; transform:translateY(-1px); background:rgba(26,27,34,.92) !important; }
+div[data-testid="stVerticalBlock"]:has(.prod-click-marker) { position:relative; }
 div[data-testid="stVerticalBlock"]:has(.prod-click-marker) .stButton,
-div[data-testid="stVerticalBlock"]:has(.cat-click-marker) div[data-testid="stButton"],
 div[data-testid="stVerticalBlock"]:has(.prod-click-marker) div[data-testid="stButton"] { position:absolute; inset:0; z-index:20; margin:0 !important; }
-div[data-testid="stVerticalBlock"]:has(.cat-click-marker) .stButton > button,
 div[data-testid="stVerticalBlock"]:has(.prod-click-marker) .stButton > button,
-div[data-testid="stVerticalBlock"]:has(.cat-click-marker) div[data-testid="stButton"] > button,
 div[data-testid="stVerticalBlock"]:has(.prod-click-marker) div[data-testid="stButton"] > button { width:100% !important; height:100% !important; min-height:100% !important; opacity:0 !important; cursor:pointer !important; border:0 !important; padding:0 !important; }
 .prod-card { height:156px; padding:12px; cursor:pointer; text-align:center; transition:all .18s ease; overflow:hidden; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .prod-card.selected { border:2px solid #7C3AED; box-shadow:0 0 0 1px rgba(124,58,237,.35),0 0 26px rgba(124,58,237,.20); }
@@ -665,19 +669,9 @@ def render_category_selector(df: pd.DataFrame) -> None:
         count = int((df["系列"] == category).sum())
         with cols[idx % len(cols)]:
             icon = "⚡" if "快" in category else "🔩"
-            st.markdown(
-                f"""
-                <div class="cat-click-marker"></div>
-                <div class="cat-card">
-                  <div class="cat-icon">{icon}</div>
-                  <div class="cat-title">{html.escape(category)}系列</div>
-                  <div class="cat-desc">来自 products.xlsx 的动态产品系列。新增系列后这里会自动出现入口。</div>
-                  <span class="cat-badge">◆ {count} 款产品</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            if st.button(" ", key=f"cat_card_{idx}_{category}", use_container_width=True):
+            st.markdown('<div class="cat-button-marker"></div>', unsafe_allow_html=True)
+            card_label = f"{icon}\n\n{category}系列\n\n来自 products.xlsx 的动态产品系列。新增系列后这里会自动出现入口。\n\n◆ {count} 款产品"
+            if st.button(card_label, key=f"cat_card_{idx}_{category}", use_container_width=True):
                 st.session_state.selected_cat = category
                 cat_df = df[df["系列"] == category].reset_index(drop=True)
                 st.session_state.selected_prod = str(cat_df.iloc[0]["产品名称"]) if len(cat_df) else None

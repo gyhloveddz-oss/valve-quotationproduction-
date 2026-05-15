@@ -5,7 +5,7 @@
 账号密码必须通过 Streamlit 的 st.secrets 配置。
 """
 
-APP_VERSION = "v1.0-production"
+APP_VERSION = "v5-ui-fix"
 APP_NAME = "成宁阀芯报价工作台"
 APP_SUBTITLE = "ValveCore Pricing · Streamlit Cloud Production"
 
@@ -69,8 +69,8 @@ OPTIONAL_PRODUCT_COLUMNS = [
 ]
 
 CHANGELOG = [
-    "生产版 v1.0：增加 st.secrets 登录保护，适配 Streamlit Cloud 公网部署。",
-    "生产版 v1.0：产品参数完全从 data/products.xlsx 读取，产品卡片按 Excel 行动态生成。",
-    "生产版 v1.0：新增配置中心 config.py，集中管理铜价、汇率、电镀、包装、运费与版本说明。",
-    "生产版 v1.0：对 Excel 数据、图片读取、报价计算与实时行情请求增加缓存优化。",
+    "v5：修复首页系列卡片点击无响应，改为可见大卡片按钮并保留会话状态导航。",
+    "v5：恢复三段式工作台布局，右侧报价栏保持最小 350px，金额左对齐。",
+    "v5：修复面包屑可点击、侧边栏上传区居中、Material Symbols 图标字体保护。",
+    "生产版 v1.0：增加 st.secrets 登录保护，产品参数完全从 data/products.xlsx 读取。",
 ]
