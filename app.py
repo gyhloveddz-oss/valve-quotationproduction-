@@ -103,7 +103,7 @@ span[data-testid="stIconMaterial"], span[translate="no"], span[class*="material"
 
 .stApp { background:var(--bg-base) !important; color:var(--text) !important; overflow-x:hidden !important; }
 #MainMenu, footer, header[data-testid="stHeader"], .stDeployButton, [data-testid="stToolbar"] { display:none !important; }
-.main .block-container { max-width:none !important; padding:0 1.2rem 1.8rem 1.2rem !important; overflow-x:hidden !important; }
+.main .block-container { max-width:none !important; padding:86px 1.2rem 1.8rem 1.2rem !important; overflow-x:hidden !important; }
 hr { border-color:var(--border) !important; margin:1rem 0 !important; }
 
 /* 全局输入控件 */
@@ -114,12 +114,13 @@ div[data-baseweb="input"] > div, div[data-baseweb="select"] > div:first-child, t
 div[data-baseweb="input"] input, .stNumberInput input, textarea { color:var(--text) !important; font-family:var(--mono) !important; }
 label, [data-testid="stWidgetLabel"] { color:var(--muted) !important; font-weight:650 !important; }
 
-/* 顶部窄条导航 */
+/* 顶部固定页眉 */
 .vc-header {
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  min-height:48px; padding:9px 18px; margin:0 -1.2rem 18px -1.2rem;
-  background:rgba(255,255,255,.94); border-bottom:1px solid var(--border);
-  box-shadow:0 1px 0 rgba(15,23,42,.04); backdrop-filter:blur(12px); position:sticky; top:0; z-index:20;
+  min-height:56px; padding:11px calc(1.2rem + 18px); margin:0;
+  background:rgba(255,255,255,.96); border-bottom:1px solid var(--border);
+  box-shadow:0 8px 26px rgba(15,23,42,.055); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  position:fixed; top:0; left:0; right:0; width:100vw; z-index:1000; box-sizing:border-box;
 }
 .vc-brand { display:flex; align-items:center; gap:10px; min-width:0; }
 .vc-logo { width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.78rem; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 8px 20px rgba(109,93,251,.22); }
@@ -138,7 +139,7 @@ div[data-testid="stHorizontalBlock"]:has(.layout-marker) { align-items:flex-star
 .left-pane { padding-right:.1rem; }
 .workbench-pane { padding:0 .45rem; overflow:hidden; }
 .quote-pane { min-width:320px; padding-left:.1rem; }
-div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky !important; top:1rem !important; align-self:start !important; min-width:320px !important; overflow:visible !important; }
+div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky !important; top:5.25rem !important; align-self:start !important; min-width:320px !important; overflow:visible !important; }
 .quote-column-marker, .cat-card-marker, .prod-card-marker, .crumb-marker { display:none; }
 
 /* 左侧参数栏 */
@@ -184,14 +185,14 @@ div[data-testid="stMarkdownContainer"]:has(.crumb-marker) ~ div[data-testid="stB
 
 
 
-/* 首页系列卡片：整卡即按钮，不再额外放置小按钮 */
+/* 首页系列卡片：只在首页入口使用，整卡即按钮 */
 div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div[data-testid="stButton"] > button,
 div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div.stButton > button,
 div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) ~ div[data-testid="stButton"] > button {
-  width:100% !important; min-height:178px !important; padding:24px !important; text-align:left !important; justify-content:flex-start !important; align-items:flex-start !important;
-  white-space:pre-line !important; line-height:1.58 !important; border-radius:var(--radius-card) !important;
-  background:var(--bg-panel) !important; border:1px solid var(--border) !important; box-shadow:var(--shadow-soft) !important;
-  color:var(--text) !important; font-size:.86rem !important;
+  width:100% !important; min-height:232px !important; padding:30px 28px !important; text-align:center !important; justify-content:center !important; align-items:center !important;
+  white-space:pre-line !important; line-height:1.68 !important; border-radius:var(--radius-card) !important;
+  background:linear-gradient(180deg,#FFFFFF 0%,#FFFFFF 72%,#F7F8FB 100%) !important; border:1px solid var(--border) !important; box-shadow:var(--shadow-soft) !important;
+  color:var(--text) !important; font-size:.98rem !important; font-weight:850 !important;
 }
 div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div[data-testid="stButton"] > button:hover,
 div[data-testid="stMarkdownContainer"]:has(.cat-card-marker) + div.stButton > button:hover,
@@ -795,7 +796,7 @@ def render_category_selector(df: pd.DataFrame) -> None:
         with cols[idx % len(cols)]:
             icon_text = ":material/bolt:" if "快" in category else ":material/settings:"
             st.markdown('<div class="cat-card-marker"></div>', unsafe_allow_html=True)
-            card_label = f"{icon_text}\n\n{category}系列\n\n来自 products.xlsx 的动态产品系列。新增系列后这里会自动出现入口。\n\n◆ {count} 款产品"
+            card_label = f"{icon_text}\n\n{category}系列\n\n进入{category}阀芯产品矩阵\n实时选择产品并生成报价\n\n◆ {count} 款产品"
             if st.button(card_label, key=f"cat_card_{idx}_{category}", use_container_width=True):
                 open_collection(category, df, select_first=False)
 
@@ -996,7 +997,6 @@ def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> dict[str, Any]
         st.markdown('<div class="workbench-pane">', unsafe_allow_html=True)
         if st.session_state.page == "home" or not st.session_state.selected_cat:
             render_category_selector(df)
-            render_product_empty_state(df)
         else:
             render_product_grid(df)
             selected = get_selected_product(df)

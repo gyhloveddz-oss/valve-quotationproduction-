@@ -5,7 +5,7 @@
 账号密码必须通过 Streamlit 的 st.secrets 配置。
 """
 
-APP_VERSION = "v8-button-scope-fix"
+APP_VERSION = "v9-fixed-header-home-cleanup"
 APP_NAME = "成宁阀芯报价工作台"
 APP_SUBTITLE = "ValveCore Pricing · Streamlit Cloud Production"
 
@@ -69,6 +69,9 @@ OPTIONAL_PRODUCT_COLUMNS = [
 ]
 
 CHANGELOG = [
+    "v9：顶部页眉改为 fixed 固定在视口最上方，并为主内容增加顶部间距，滚动时页眉不再离开屏幕。",
+    "v9：首页中间区域移除‘请选择左侧产品系列’大空卡，只保留产品系列入口，降低视觉噪音。",
+    "v9：快开/慢开系列入口卡片放大并更新文案，作为首页核心入口展示。",
     "v8：修复卡片 CSS 选择器作用范围过宽，普通同步按钮、批量报价按钮和面包屑不再被放大成卡片。",
     "v8：产品选中态改为只作用于 marker 后相邻按钮，点击一个产品不再导致所有产品卡片同时勾选。",
     "v8：保留单页面 page 状态机和右侧报价栏 sticky 结构，仅隔离按钮样式作用域。",
