@@ -115,13 +115,13 @@ section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] div { te
 .version-text { color:var(--subtle); font-family:var(--mono) !important; font-size:.72rem; text-align:center; }
 section[data-testid="stSidebar"] [data-testid="stExpander"] { width:100% !important; max-width:178px !important; margin-left:auto !important; margin-right:auto !important; text-align:center !important; }
 section[data-testid="stSidebar"] [data-testid="stExpander"] summary { justify-content:center !important; }
-.vc-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:10px 18px; margin:-1px -2px 64px; background:rgba(17,19,24,.86); border-bottom:1px solid var(--border); border-radius:0; box-shadow:inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter:blur(10px); }
-.vc-brand { display:flex; align-items:center; gap:12px; }
-.vc-logo { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; color:#fff; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 0 18px rgba(124,58,237,.35); }
-.vc-title { font-weight:700; letter-spacing:-.02em; }
-.vc-subtitle { color:var(--subtle); font-size:.74rem; margin-top:2px; }
-.status-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-.status-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--border); border-radius:999px; color:#D1D5DB; background:rgba(22,24,29,.78); font-size:.70rem; }
+.vc-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:40px; padding:6px 18px; margin:-1.05rem -1.35rem 96px -1.55rem; background:rgba(17,19,24,.96); border-bottom:1px solid var(--border); border-radius:0; box-shadow:0 1px 0 rgba(255,255,255,.03),0 10px 28px rgba(0,0,0,.20); backdrop-filter:blur(10px); }
+.vc-brand { display:flex; align-items:center; gap:10px; min-width:0; }
+.vc-logo { width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:6px; color:#fff; font-size:.78rem; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 0 14px rgba(124,58,237,.32); }
+.vc-title { font-size:.92rem; font-weight:800; letter-spacing:-.02em; white-space:nowrap; }
+.vc-subtitle { display:none; }
+.status-row { display:flex; gap:8px; align-items:center; flex-wrap:nowrap; justify-content:flex-end; }
+.status-chip { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border:1px solid var(--border); border-radius:999px; color:#D1D5DB; background:rgba(22,24,29,.82); font-size:.66rem; white-space:nowrap; }
 .dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
 .dot-green { background:var(--green); box-shadow:0 0 8px rgba(34,197,94,.55); } .dot-yellow { background:var(--yellow); box-shadow:0 0 8px rgba(234,179,8,.35); }
 .page-title { font-size:1.05rem; font-weight:800; letter-spacing:-.025em; margin:.15rem 0 .55rem; }
@@ -135,7 +135,7 @@ section[data-testid="stSidebar"] [data-testid="stExpander"] summary { justify-co
 .cat-title { font-size:1.08rem; font-weight:700; margin-bottom:.4rem; }
 .cat-desc { color:var(--subtle); font-size:.82rem; line-height:1.65; }
 .cat-badge { display:inline-flex; margin-top:1rem; padding:3px 10px; border:1px solid rgba(165,243,252,.25); border-radius:999px; color:var(--cyan); font-size:.72rem; background:rgba(165,243,252,.08); }
-.cat-click-marker, .prod-click-marker, .cat-button-marker { display:none; }
+.cat-click-marker, .prod-click-marker, .cat-button-marker, .prod-button-marker { display:none; }
 div[data-testid="stVerticalBlock"]:has(.cat-button-marker) .stButton > button,
 div[data-testid="stVerticalBlock"]:has(.cat-button-marker) div[data-testid="stButton"] > button {
   width:100% !important; min-height:150px !important; padding:22px !important; justify-content:flex-start !important; align-items:flex-start !important; text-align:left !important;
@@ -144,11 +144,19 @@ div[data-testid="stVerticalBlock"]:has(.cat-button-marker) div[data-testid="stBu
 }
 div[data-testid="stVerticalBlock"]:has(.cat-button-marker) .stButton > button:hover,
 div[data-testid="stVerticalBlock"]:has(.cat-button-marker) div[data-testid="stButton"] > button:hover { border-color:#7C3AED !important; transform:translateY(-1px); background:rgba(26,27,34,.92) !important; }
-div[data-testid="stVerticalBlock"]:has(.prod-click-marker) { position:relative; }
-div[data-testid="stVerticalBlock"]:has(.prod-click-marker) .stButton,
-div[data-testid="stVerticalBlock"]:has(.prod-click-marker) div[data-testid="stButton"] { position:absolute; inset:0; z-index:20; margin:0 !important; }
-div[data-testid="stVerticalBlock"]:has(.prod-click-marker) .stButton > button,
-div[data-testid="stVerticalBlock"]:has(.prod-click-marker) div[data-testid="stButton"] > button { width:100% !important; height:100% !important; min-height:100% !important; opacity:0 !important; cursor:pointer !important; border:0 !important; padding:0 !important; }
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker) .stButton > button,
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker) div[data-testid="stButton"] > button {
+  width:100% !important; min-height:156px !important; padding:18px 10px 12px !important; display:flex !important; align-items:flex-end !important; justify-content:center !important; position:relative !important;
+  text-align:center !important; white-space:pre-line !important; line-height:1.3 !important; color:#E5E7EB !important; font-size:.72rem !important; font-weight:800 !important;
+  background:rgba(22,24,29,.84) !important; border:1px solid var(--border) !important; border-radius:var(--radius-card) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 28px rgba(0,0,0,.28) !important; cursor:pointer !important;
+}
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker) .stButton > button::before,
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker) div[data-testid="stButton"] > button::before { content:"◇"; position:absolute; top:48%; left:50%; transform:translate(-50%,-50%); color:#3F3F46; font-size:1.45rem; font-weight:400; }
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker) .stButton > button:hover,
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker) div[data-testid="stButton"] > button:hover { border-color:#7C3AED !important; transform:translateY(-1px); background:rgba(26,27,34,.92) !important; }
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker.selected) .stButton > button,
+div[data-testid="stVerticalBlock"]:has(.prod-button-marker.selected) div[data-testid="stButton"] > button { border:2px solid #7C3AED !important; box-shadow:0 0 0 1px rgba(124,58,237,.35),0 0 26px rgba(124,58,237,.20) !important; background:rgba(31,30,48,.86) !important; }
 .prod-card { height:156px; padding:12px; cursor:pointer; text-align:center; transition:all .18s ease; overflow:hidden; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .prod-card.selected { border:2px solid #7C3AED; box-shadow:0 0 0 1px rgba(124,58,237,.35),0 0 26px rgba(124,58,237,.20); }
 .prod-img { width:100%; height:112px; object-fit:contain; margin-bottom:8px; filter:drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
@@ -207,7 +215,7 @@ div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky; 
 .breadcrumb .stButton > button { min-height:32px !important; padding:6px 10px !important; font-size:.72rem !important; color:#B8BBC2 !important; }
 .products-stage { width:100%; max-width:100%; margin:0; overflow-x:hidden; }
 @media (max-width: 1280px) { .three-col-right, div[data-testid="stVerticalBlock"]:has(.quote-column-marker), .quote-card { min-width:350px !important; } }
-@media (max-width: 1100px) { .metric-grid, .spec-strip { grid-template-columns:1fr; } .vc-header { align-items:flex-start; flex-direction:column; } }
+@media (max-width: 1100px) { .metric-grid, .spec-strip { grid-template-columns:1fr; } .vc-header { align-items:center; flex-direction:row; overflow-x:auto; } .vc-title { font-size:.84rem; } .status-chip { font-size:.6rem; padding:3px 7px; } }
 </style>
         """,
         unsafe_allow_html=True,
@@ -712,21 +720,11 @@ def render_product_grid(df: pd.DataFrame) -> None:
         for offset, (_, product) in enumerate(row_df.iterrows()):
             product_name = str(product["产品名称"])
             with cols[offset]:
-                image_b64 = find_product_image(product)
                 selected_class = "selected" if selected_prod == product_name else ""
                 safe_name = html.escape(product_name)
-                image_html = f'<img class="prod-img" src="data:image/png;base64,{image_b64}" alt="{safe_name}">' if image_b64 else '<div class="prod-placeholder">◇</div>'
-                st.markdown(
-                    f"""
-                    <div class="prod-click-marker"></div>
-                    <div class="prod-card {selected_class}">
-                      {image_html}
-                      <div class="prod-name">{safe_name}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-                if st.button(" ", key=f"prod_card_{start}_{offset}_{product_name}", use_container_width=True):
+                marker_class = f"prod-button-marker {selected_class}".strip()
+                st.markdown(f'<div class="{marker_class}"></div>', unsafe_allow_html=True)
+                if st.button(product_name, key=f"prod_card_{start}_{offset}_{product_name}", use_container_width=True):
                     st.session_state.selected_prod = product_name
                     st.session_state.selected_cat = selected_cat
                     st.session_state.current_page = "category"
