@@ -91,8 +91,10 @@ def inject_css() -> None:
 html, body, .stApp, .main, button, input, textarea, select, label, p, div, span { font-family:var(--font); }
 [data-testid="stIconMaterial"], .material-icons, .material-symbols-rounded, .material-symbols-outlined, span[class*="material"], i[class*="material"] { font-family:'Material Symbols Rounded','Material Symbols Outlined','Material Icons' !important; font-weight:normal !important; font-style:normal !important; font-size:18px !important; line-height:1 !important; letter-spacing:normal !important; text-transform:none !important; display:inline-flex !important; white-space:nowrap !important; word-wrap:normal !important; direction:ltr !important; -webkit-font-feature-settings:'liga' !important; -webkit-font-smoothing:antialiased !important; }
 .stApp { background:var(--bg) !important; color:var(--text) !important; overflow-x:hidden !important; }
-#MainMenu, footer, header[data-testid="stHeader"], .stDeployButton, [data-testid="stToolbar"] { display:none !important; }
-.main .block-container { max-width:none !important; padding:82px 2.1rem 1.8rem 2.1rem !important; }
+#MainMenu, footer, .stDeployButton, [data-testid="stBaseButton-header"] { display:none !important; }
+/* 保留 Streamlit 原生 header 与 toolbar：Streamlit 1.57 的展开按钮 stExpandSidebarButton 位于该区域，不能 display:none。 */
+header[data-testid="stHeader"], [data-testid="stToolbar"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:999999 !important; }
+.main .block-container { max-width:none !important; padding:1.2rem 2.1rem 1.8rem 2.1rem !important; }
 	section[data-testid="stSidebar"] { background:#FFFFFF !important; border-right:1px solid var(--line) !important; }
 	section[data-testid="stSidebar"] > div { background:#FFFFFF !important; }
 	div[data-testid="stVerticalBlockBorderWrapper"] { border-radius:12px !important; border:1px solid #E5E7EB !important; background:#FFFFFF !important; box-shadow:0 1px 3px 0 rgba(0,0,0,.05) !important; }
@@ -102,12 +104,17 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 	section[data-testid="stSidebar"] [data-testid="stFileUploader"] button { margin-left:auto !important; margin-right:auto !important; }
 	section[data-testid="stSidebar"] .stButton > button { border-radius:10px !important; }
 
-	/* Sidebar rescue control: keep Streamlit native collapse / expand entry always above the custom fixed header. */
+	/* 侧边栏控制器必须保持可见可点：不要隐藏原生 header，也不要用固定顶栏覆盖左上角。 */
 	[data-testid="stSidebarCollapseButton"],
-	[data-testid="stSidebarCollapseButton"] button,
 	[data-testid="collapsedControl"],
-	[data-testid="collapsedControl"] button {
-		z-index:999999 !important;
+	[data-testid="stExpandSidebarButton"] {
+		z-index:1000000 !important;
+		opacity:1 !important;
+		visibility:visible !important;
+		pointer-events:auto !important;
+	}
+	/* Streamlit 1.57 收起后的真实展开按钮是 stExpandSidebarButton；将它固定成可见可点的左上角入口。 */
+	[data-testid="stExpandSidebarButton"] {
 		position:fixed !important;
 		left:12px !important;
 		top:12px !important;
@@ -115,7 +122,7 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 		height:36px !important;
 		min-width:36px !important;
 		min-height:36px !important;
-		display:flex !important;
+		display:inline-flex !important;
 		align-items:center !important;
 		justify-content:center !important;
 		background:#FFFFFF !important;
@@ -123,25 +130,11 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 		border-radius:999px !important;
 		box-shadow:0 6px 18px rgba(15,23,42,.14) !important;
 		color:#111827 !important;
-		opacity:1 !important;
-		visibility:visible !important;
-		pointer-events:auto !important;
 	}
-	[data-testid="stSidebarCollapseButton"]:hover,
-	[data-testid="stSidebarCollapseButton"] button:hover,
-	[data-testid="collapsedControl"]:hover,
-	[data-testid="collapsedControl"] button:hover {
-		background:#F3F4F6 !important;
-		color:#4F46E5 !important;
-		transform:translateY(-1px) !important;
-	}
-	/* The custom top bar is informational; allow native controls underneath to receive clicks if their hit area overlaps. */
-	.vc-header { z-index:900 !important; pointer-events:none !important; }
-	.vc-header .vc-brand, .vc-header .vc-badges { pointer-events:auto !important; }
 hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
-/* 固定顶部页眉 */
-.vc-header { position:fixed; z-index:1000; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; background:rgba(255,255,255,.96); border-bottom:1px solid var(--line); box-shadow:var(--shadow); backdrop-filter:blur(14px); }
+/* 页面头部：使用普通文档流，避免遮挡 Streamlit 原生侧边栏展开按钮。 */
+.vc-header { position:relative; z-index:1; width:100%; min-height:56px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; margin:0 0 14px 0; background:rgba(255,255,255,.96); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); backdrop-filter:blur(14px); }
 .vc-brand { display:flex; align-items:center; gap:10px; min-width:0; }
 .vc-logo { width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.82rem; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 8px 18px rgba(109,93,251,.22); }
 .vc-title { color:var(--text); font-size:.95rem; font-weight:800; letter-spacing:-.02em; white-space:nowrap; }
@@ -258,7 +251,7 @@ div[data-testid="stSegmentedControl"] { margin-bottom:12px !important; }
 	[data-testid="stTabs"] [role="tablist"] { gap:8px !important; }
 	[data-testid="stTabs"] [role="tab"] { padding:8px 12px !important; }
 	@media (max-width: 1180px) { .main .block-container { padding-left:1rem !important; padding-right:1rem !important; } .quote-pane, .quote-card { min-width:300px; } .product-img-wrap { height:120px; } }
-@media (max-width: 980px) { .quote-pane { position:relative; top:auto; min-width:100%; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .vc-header { padding:0 1rem; } }
+@media (max-width: 980px) { .quote-pane { position:relative; top:auto; min-width:100%; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .vc-header { padding:10px 12px; flex-wrap:wrap; } }
 </style>
         """,
         unsafe_allow_html=True,
