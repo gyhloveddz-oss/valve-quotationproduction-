@@ -52,7 +52,7 @@ st.set_page_config(
     page_title=f"{APP_NAME} · SaaS",
     page_icon="◆",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 
@@ -68,7 +68,7 @@ def inject_css() -> None:
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg:#F8F9FA;
+  --bg:#F3F4F6;
   --panel:#FFFFFF;
   --soft:#F3F5F8;
   --line:#E6E9EF;
@@ -93,6 +93,14 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 .stApp { background:var(--bg) !important; color:var(--text) !important; overflow-x:hidden !important; }
 #MainMenu, footer, header[data-testid="stHeader"], .stDeployButton, [data-testid="stToolbar"] { display:none !important; }
 .main .block-container { max-width:none !important; padding:82px 2.1rem 1.8rem 2.1rem !important; }
+	section[data-testid="stSidebar"] { background:#FFFFFF !important; border-right:1px solid var(--line) !important; }
+	section[data-testid="stSidebar"] > div { background:#FFFFFF !important; }
+	div[data-testid="stVerticalBlockBorderWrapper"] { border-radius:12px !important; border:1px solid #E5E7EB !important; background:#FFFFFF !important; box-shadow:0 1px 3px 0 rgba(0,0,0,.05) !important; }
+	div[data-testid="stVerticalBlockBorderWrapper"] > div { padding:14px !important; }
+	section[data-testid="stSidebar"] [data-testid="stFileUploader"] { text-align:center !important; }
+	section[data-testid="stSidebar"] [data-testid="stFileUploader"] section { justify-content:center !important; align-items:center !important; text-align:center !important; }
+	section[data-testid="stSidebar"] [data-testid="stFileUploader"] button { margin-left:auto !important; margin-right:auto !important; }
+	section[data-testid="stSidebar"] .stButton > button { border-radius:10px !important; }
 hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
 /* 固定顶部页眉 */
@@ -163,7 +171,7 @@ div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > 
 .product-card.selected { border:2px solid var(--purple); box-shadow:0 0 0 4px rgba(109,93,251,.10), var(--shadow-hover); }
 .product-img-wrap { height:148px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .product-img { width:100%; height:100%; object-fit:contain; display:block; }
-.product-name { margin-top:12px; color:var(--text); font-size:.94rem; font-weight:850; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+.product-name { margin-top:12px; color:var(--text); font-size:.94rem; font-weight:850; line-height:1.35; white-space:normal; overflow:visible; text-overflow:clip; text-align:center; min-height:2.5em; display:flex; align-items:center; justify-content:center; }
 .product-check { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:var(--purple); color:#fff; font-size:.72rem; font-weight:900; }
 div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margin-top:8px !important; height:38px !important; min-height:38px !important; font-size:.86rem !important; justify-content:center !important; }
 
@@ -175,7 +183,7 @@ div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margi
 .sc-sub, .mt-sub { color:var(--subtle); font-size:.66rem; margin-top:3px; }
 .controls-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow); margin-top:14px; }
 .quote-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:0 16px 34px rgba(15,23,42,.07); min-width:330px; overflow:hidden; }
-.empty-quote { min-height:360px; display:flex; align-items:center; justify-content:center; text-align:center; }
+.empty-quote { display:none; }
 .empty-icon { width:52px; height:52px; display:inline-flex; align-items:center; justify-content:center; border-radius:16px; background:var(--purple-soft); color:var(--purple); margin-bottom:12px; font-weight:900; }
 .panel-kicker { display:flex; justify-content:space-between; gap:8px; color:var(--muted); font-size:.66rem; font-weight:800; letter-spacing:.06em; margin-bottom:10px; }
 .panel-product { font-size:1.05rem; font-weight:850; color:var(--text); margin-bottom:12px; }
@@ -206,7 +214,13 @@ div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margi
 .login-title { font-size:1.2rem; font-weight:850; color:var(--text); margin-bottom:4px; }
 .login-sub { color:var(--muted); font-size:.82rem; line-height:1.65; }
 [data-testid="stDataFrame"] * { font-family:var(--mono) !important; }
-@media (max-width: 1180px) { .main .block-container { padding-left:1rem !important; padding-right:1rem !important; } .quote-pane, .quote-card { min-width:300px; } .product-img-wrap { height:120px; } }
+div[data-testid="stSegmentedControl"] { margin-bottom:12px !important; }
+	div[data-testid="stSegmentedControl"] label { font-weight:700 !important; color:#344054 !important; }
+	.filter-bar-spacer { height:28px; }
+	[data-testid="stTabs"] { margin-top:22px !important; }
+	[data-testid="stTabs"] [role="tablist"] { gap:8px !important; }
+	[data-testid="stTabs"] [role="tab"] { padding:8px 12px !important; }
+	@media (max-width: 1180px) { .main .block-container { padding-left:1rem !important; padding-right:1rem !important; } .quote-pane, .quote-card { min-width:300px; } .product-img-wrap { height:120px; } }
 @media (max-width: 980px) { .quote-pane { position:relative; top:auto; min-width:100%; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .vc-header { padding:0 1rem; } }
 </style>
         """,
@@ -512,71 +526,105 @@ def ensure_valid_selection(df: pd.DataFrame) -> None:
 # ═══════════════════════════════════════════════════════════
 # UI 渲染层：单页面专业生产力工作台
 # ═══════════════════════════════════════════════════════════
+
 def render_sidebar_controls() -> dict[str, Any]:
-    """渲染左侧报价参数栏，保留所有输入框手动编辑能力。"""
-    st.markdown('<div class="left-pane"><div class="side-panel"><div class="side-title">报价参数</div><div class="side-sub">铜价、汇率与箱规在此统一管理。</div>', unsafe_allow_html=True)
+    """B 方案：使用原生 Streamlit Sidebar 承载全部全局参数与数据管理。"""
+    with st.sidebar:
+        st.markdown("### 报价参数")
+        st.caption("铜价、汇率、箱规与产品表在此统一管理。")
 
-    st.markdown('<span class="sb-label">铜价（元/吨）</span>', unsafe_allow_html=True)
-    copper_price = st.number_input("铜价", min_value=40000, max_value=150000, value=int(st.session_state.copper_price), step=100, label_visibility="collapsed")
-    st.session_state.copper_price = copper_price
-    if st.button("同步/更新铜价", key="sync_copper", use_container_width=True):
-        with st.spinner("同步铜价中..."):
-            result = cached_copper_price()
-            st.session_state.copper_price = float(result.get("price", DEFAULT_COPPER_PRICE))
-            st.session_state.copper_source = result.get("source", "实时源")
-        st.rerun()
+        with st.container(border=True):
+            copper_price = st.number_input(
+                "铜价（元/吨）",
+                min_value=40000,
+                max_value=150000,
+                value=int(st.session_state.copper_price),
+                step=100,
+            )
+            st.session_state.copper_price = copper_price
 
-    st.divider()
-    st.markdown('<span class="sb-label">报价货币</span>', unsafe_allow_html=True)
-    currency_options = ["USD", "EUR", "AED", "SAR", "MYR", "BRL", "NGN", "RMB"]
-    currency_labels = {"USD":"$ USD · 美元","EUR":"€ EUR · 欧元","AED":"AED · 迪拉姆","SAR":"SAR · 里亚尔","MYR":"RM MYR · 林吉特","BRL":"R$ BRL · 雷亚尔","NGN":"₦ NGN · 奈拉","RMB":"¥ RMB · 人民币"}
-    currency = st.selectbox("报价货币", currency_options, format_func=lambda item: currency_labels.get(item, item), index=currency_options.index(st.session_state.currency) if st.session_state.currency in currency_options else 0, label_visibility="collapsed")
-    st.session_state.currency = currency
-    default_rate = st.session_state.rates.get(currency, DEFAULT_RATES.get(currency, 1.0)) if currency != "RMB" else 1.0
-    exchange_rate = st.number_input("汇率", min_value=0.0001, max_value=100.0, value=float(default_rate), step=0.01, format="%.4f", disabled=(currency == "RMB"), label_visibility="collapsed")
-    st.session_state.exchange_rate = exchange_rate
-    if currency != "RMB":
-        effective_rate = round(exchange_rate * EXCHANGE_RATE_MARGIN, 4)
-        st.markdown(f'<p class="sb-hint">报价汇率 = {exchange_rate} × {EXCHANGE_RATE_MARGIN} = <b>{effective_rate}</b></p>', unsafe_allow_html=True)
-    if st.button("同步/更新汇率", key="sync_rates", use_container_width=True):
-        with st.spinner("同步汇率中..."):
-            st.session_state.rates = cached_exchange_rates()
-        st.rerun()
+            currency_options = ["USD", "EUR", "AED", "SAR", "MYR", "BRL", "NGN", "RMB"]
+            currency_labels = {
+                "USD": "$ USD · 美元",
+                "EUR": "€ EUR · 欧元",
+                "AED": "AED · 迪拉姆",
+                "SAR": "SAR · 里亚尔",
+                "MYR": "RM MYR · 林吉特",
+                "BRL": "R$ BRL · 雷亚尔",
+                "NGN": "₦ NGN · 奈拉",
+                "RMB": "¥ RMB · 人民币",
+            }
+            currency = st.selectbox(
+                "报价货币",
+                currency_options,
+                format_func=lambda item: currency_labels.get(item, item),
+                index=currency_options.index(st.session_state.currency) if st.session_state.currency in currency_options else 0,
+            )
+            st.session_state.currency = currency
+            default_rate = st.session_state.rates.get(currency, DEFAULT_RATES.get(currency, 1.0)) if currency != "RMB" else 1.0
+            exchange_rate = st.number_input(
+                "汇率",
+                min_value=0.0001,
+                max_value=100.0,
+                value=float(default_rate),
+                step=0.01,
+                format="%.4f",
+                disabled=(currency == "RMB"),
+            )
+            st.session_state.exchange_rate = exchange_rate
+            if currency != "RMB":
+                effective_rate = round(exchange_rate * EXCHANGE_RATE_MARGIN, 4)
+                st.caption(f"报价汇率 = {exchange_rate} × {EXCHANGE_RATE_MARGIN} = {effective_rate}")
 
-    st.divider()
-    st.markdown('<span class="sb-label">标准箱规格</span>', unsafe_allow_html=True)
-    col_l, col_w, col_h = st.columns(3, gap="small")
-    with col_l:
-        box_l = st.number_input("长cm", value=int(st.session_state.box_l), step=1, format="%d", label_visibility="collapsed")
-    with col_w:
-        box_w = st.number_input("宽cm", value=int(st.session_state.box_w), step=1, format="%d", label_visibility="collapsed")
-    with col_h:
-        box_h = st.number_input("高cm", value=int(st.session_state.box_h), step=1, format="%d", label_visibility="collapsed")
-    units_per_box = st.number_input("每箱数量", min_value=1, value=int(st.session_state.units_per_box), step=10, label_visibility="collapsed")
-    cbm_val = round(box_l * box_w * box_h / 1_000_000, 4)
-    st.markdown(f'<p class="sb-hint box-hint">{box_l:.0f}×{box_w:.0f}×{box_h:.0f} cm · {cbm_val:.2f} CBM · {int(units_per_box)} PCS</p>', unsafe_allow_html=True)
-    st.session_state.box_l, st.session_state.box_w, st.session_state.box_h = box_l, box_w, box_h
-    st.session_state.units_per_box = units_per_box
+        with st.container(border=True):
+            st.markdown("#### 标准箱规格")
+            row_1 = st.columns(3, gap="small")
+            with row_1[0]:
+                box_l = st.number_input("长（cm）", value=int(st.session_state.box_l), step=1, format="%d")
+            with row_1[1]:
+                box_w = st.number_input("宽（cm）", value=int(st.session_state.box_w), step=1, format="%d")
+            with row_1[2]:
+                box_h = st.number_input("高（cm）", value=int(st.session_state.box_h), step=1, format="%d")
+            units_per_box = st.number_input("装箱数（PCS）", min_value=1, value=int(st.session_state.units_per_box), step=10)
+            cbm_val = round(box_l * box_w * box_h / 1_000_000, 4)
+            st.markdown(f'<p class="sb-hint box-hint">{box_l:.0f}×{box_w:.0f}×{box_h:.0f} cm · {cbm_val:.2f} CBM · {int(units_per_box)} PCS</p>', unsafe_allow_html=True)
+            st.session_state.box_l, st.session_state.box_w, st.session_state.box_h = box_l, box_w, box_h
+            st.session_state.units_per_box = units_per_box
 
-    st.divider()
-    st.markdown('<span class="sb-label">数据管理</span><div class="upload-center"></div>', unsafe_allow_html=True)
-    uploaded = st.file_uploader("上传 XLSX 产品表", type=["xlsx"], label_visibility="collapsed")
-    if uploaded:
-        saved_path = UPLOAD_DIR / uploaded.name
-        saved_path.write_bytes(uploaded.getbuffer())
-        st.session_state.custom_excel_path = str(saved_path)
-        st.cache_data.clear()
-        st.rerun()
-    if st.session_state.custom_excel_path:
-        st.markdown(f'<p class="sb-hint">当前数据：{Path(st.session_state.custom_excel_path).name}</p>', unsafe_allow_html=True)
-        if st.button("恢复默认数据", key="reset_data", use_container_width=True):
-            st.session_state.custom_excel_path = None
-            st.cache_data.clear()
+        with st.container(border=True):
+            st.markdown("#### 数据管理")
+            st.markdown('<div class="upload-center"></div>', unsafe_allow_html=True)
+            uploaded = st.file_uploader("上传 XLSX 产品表", type=["xlsx"], label_visibility="collapsed")
+            if uploaded:
+                saved_path = UPLOAD_DIR / uploaded.name
+                saved_path.write_bytes(uploaded.getbuffer())
+                st.session_state.custom_excel_path = str(saved_path)
+                st.cache_data.clear()
+                st.rerun()
+            if st.session_state.custom_excel_path:
+                st.caption(f"当前数据：{Path(st.session_state.custom_excel_path).name}")
+                if st.button("恢复默认数据", key="reset_data", use_container_width=True):
+                    st.session_state.custom_excel_path = None
+                    st.cache_data.clear()
+                    st.rerun()
+
+        if st.button("刷新全局参数", type="secondary", use_container_width=True):
+            with st.spinner("正在刷新铜价与汇率..."):
+                copper_result = cached_copper_price()
+                st.session_state.copper_price = float(copper_result.get("price", DEFAULT_COPPER_PRICE))
+                st.session_state.copper_source = copper_result.get("source", "实时源")
+                st.session_state.rates = cached_exchange_rates()
             st.rerun()
 
-    st.markdown('</div></div>', unsafe_allow_html=True)
-    return {"copper_price": copper_price, "currency": currency, "exchange_rate": exchange_rate, "box_l": box_l, "box_w": box_w, "box_h": box_h, "units_per_box": units_per_box}
-
+    return {
+        "copper_price": st.session_state.copper_price,
+        "currency": st.session_state.currency,
+        "exchange_rate": st.session_state.exchange_rate,
+        "box_l": st.session_state.box_l,
+        "box_w": st.session_state.box_w,
+        "box_h": st.session_state.box_h,
+        "units_per_box": st.session_state.units_per_box,
+    }
 
 def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
     now = datetime.now().strftime("%H:%M")
@@ -617,6 +665,40 @@ def render_breadcrumb(product: pd.Series | None = None) -> None:
     with cols[4]:
         product_label = html.escape(str(product["产品名称"])) if product is not None else "产品列表"
         st.markdown(f'<span class="crumb-current">{product_label}</span>', unsafe_allow_html=True)
+
+def render_segmented_navigation(df: pd.DataFrame) -> pd.DataFrame:
+    """B 方案：用原生 segmented_control 替代面包屑与系列文本导航。"""
+    categories = list(df["系列"].dropna().astype(str).unique())
+    options = ["所有系列"] + [f"{category}系列" for category in categories] + ["产品列表"]
+    if st.session_state.selected_cat:
+        current = f"{st.session_state.selected_cat}系列"
+    elif st.session_state.page == "product" and st.session_state.selected_prod:
+        current = "产品列表"
+    else:
+        current = "所有系列"
+    if current not in options:
+        current = "所有系列"
+
+    selected = st.segmented_control("切换系列", options, default=current, key="series_segmented_control")
+    selected = selected or current
+
+    if selected == "所有系列":
+        st.session_state.page = "collection"
+        st.session_state.selected_cat = None
+        filtered = df.reset_index(drop=True)
+    elif selected == "产品列表":
+        st.session_state.page = "collection"
+        st.session_state.selected_cat = None
+        filtered = df.reset_index(drop=True)
+    else:
+        category = selected[:-2] if selected.endswith("系列") else selected
+        st.session_state.page = "collection"
+        st.session_state.selected_cat = category
+        filtered = df[df["系列"].astype(str) == str(category)].reset_index(drop=True)
+
+    if st.session_state.selected_prod and st.session_state.selected_prod not in set(filtered["产品名称"].astype(str)):
+        st.session_state.selected_prod = None
+    return filtered
 
 def product_image_src(product_row: pd.Series) -> str:
     explicit_path = resolve_relative_path(product_row.get("图片路径", ""))
@@ -671,28 +753,35 @@ def get_selected_product(df: pd.DataFrame) -> pd.Series | None:
     return matched.iloc[0]
 
 
+
 def render_product_grid(df: pd.DataFrame) -> None:
-    selected_cat = st.session_state.selected_cat
-    cat_df = df[df["系列"].astype(str) == str(selected_cat)].reset_index(drop=True) if selected_cat else df.reset_index(drop=True)
+    """B 方案：每张产品卡片使用同一个原生 border container 包裹图片、名称和按钮。"""
+    cat_df = df.reset_index(drop=True)
     if cat_df.empty:
-        st.markdown('<div class="products-note">暂无产品数据。</div>', unsafe_allow_html=True)
+        st.info("暂无产品数据。")
         return
-    grid_cols = st.columns(4 if len(cat_df) >= 4 else max(1, len(cat_df)), gap="large")
+
+    grid_cols = st.columns(4, gap="large")
     for idx, (_, product) in enumerate(cat_df.iterrows()):
         selected = str(st.session_state.selected_prod) == str(product["产品名称"])
         img_src = product_image_src(product)
-        with grid_cols[idx % len(grid_cols)]:
-            check = '<div class="product-check">✓</div>' if selected else ''
-            st.markdown(f"""
-            <div class="product-card {'selected' if selected else ''}" style="position:relative;">
-              {check}
-              <div class="product-img-wrap"><img class="product-img" src="{img_src}" alt="{html.escape(str(product['产品名称']))}" /></div>
-              <div class="product-name">{html.escape(str(product['产品名称']))}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button("选择", key=f"prod_select_{selected_cat}_{idx}_{product['产品名称']}", use_container_width=True):
-                open_product(str(product["系列"]), str(product["产品名称"]))
-
+        with grid_cols[idx % 4]:
+            with st.container(border=True):
+                st.markdown(
+                    f"""
+                    <div class="product-card-native {'selected' if selected else ''}">
+                      <div class="product-img-wrap"><img class="product-img" src="{img_src}" alt="{html.escape(str(product['产品名称']))}" /></div>
+                      <div class="product-name">{html.escape(str(product['产品名称']))}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                button_type = "primary" if selected else "secondary"
+                if st.button("选择", key=f"prod_select_b_{idx}_{product['产品名称']}", type=button_type, use_container_width=True):
+                    st.session_state.page = "product"
+                    st.session_state.selected_cat = str(product["系列"])
+                    st.session_state.selected_prod = str(product["产品名称"])
+                    st.rerun()
 
 def render_product_specs(product: pd.Series) -> None:
     total_g = float(product.get("产品总重_g", 0) or 0)
@@ -721,19 +810,17 @@ def render_quote_controls() -> None:
     st.session_state.destination = st.selectbox("目的地", destinations, index=destinations.index(st.session_state.destination) if st.session_state.destination in destinations else 0)
 
 
+
 def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> None:
-    st.markdown('<div class="quote-pane">', unsafe_allow_html=True)
+    """B 方案：未选择产品时不渲染静态占位卡；选择后才显示右侧报价指标。"""
     if product is None:
-        st.markdown("""<div class="quote-card empty-quote"><div><div class="empty-icon">◆</div><div class="panel-product">开始报价</div><div style="color:#667085;font-size:.78rem;">先选择产品系列，然后选择具体产品。</div></div></div>""", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
         return
 
     quote = calculate_quote(product, params["copper_price"], st.session_state.plating, st.session_state.packaging, st.session_state.quantity, st.session_state.destination, params["currency"], params["exchange_rate"], params["box_l"], params["box_w"], params["box_h"], params["units_per_box"])
     symbol = CURRENCY_SYMBOLS.get(params["currency"], params["currency"])
-    margin_cls = "mp-good" if quote["margin"] >= 8 else "mp-warn" if quote["margin"] >= 5 else "mp-danger"
     cost_total = max(quote["rmb"], 0.0001)
-    cost_rows = []
     cost_colors = {"原材料":"#F79009","加工配件":"#2E90FA","电镀":"#7A5AF8","包装":"#12B76A","运费":"#6172F3","利润":"#F04438"}
+    cost_rows = []
     for name in ["原材料", "加工配件", "电镀", "包装", "运费", "利润"]:
         val = float(quote.get(name, 0))
         pct = val / cost_total * 100
@@ -758,39 +845,36 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
         f"订单总价 = {symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity)} PCS = {symbol}{quote['total']:,.2f}"
     )
 
-    st.markdown(f"""
-    <div class="quote-card">
-      <div class="panel-kicker"><span>QUOTE SUMMARY</span><span>{params['currency']} / 只</span></div>
-      <div class="panel-product">{html.escape(str(product['产品名称']))}</div>
-      <div class="price-hero"><div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{params['currency']} / 只</div></div><div class="ph-amount">{symbol}{quote['fgn']:.4f}</div><div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div><div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}，含安全边际。</div></div>
-    </div>
-    """, unsafe_allow_html=True)
-    with st.expander("查看详细计算公式", expanded=False):
-        st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
-    st.markdown(f"""
-    <div class="quote-card" style="margin-top:10px;">
-      <div class="metric-grid"><div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div><div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div></div>
-      <div class="order-total"><div class="ot-label">订单总价 <span style="float:right;color:#98A2B3;">{int(st.session_state.quantity)} 只</span></div><div class="ot-val">{symbol}{quote['total']:,.2f}</div><div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity)} {params['currency']}</div></div>
-      <div class="margin-row"><div class="margin-label">利润率</div><div class="margin-pill {margin_cls}">+ {quote['margin']:.1f}%</div></div>
-      {''.join(cost_rows)}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="quote-pane">', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.caption("QUOTE SUMMARY")
+        st.markdown(f"### {html.escape(str(product['产品名称']))}")
+        st.metric("单件报价", f"{symbol}{quote['fgn']:.4f}", delta=f"利润率 {quote['margin']:.1f}%")
+        st.metric("订单总价", f"{symbol}{quote['total']:,.2f}", delta=f"{int(st.session_state.quantity)} PCS")
+        st.markdown(f"<div class='ph-rmb'>¥{quote['rmb']:.4f} RMB / 只</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='ph-sub'>有效汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}</div>", unsafe_allow_html=True)
+        with st.expander("查看详细计算公式", expanded=False):
+            st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
+
+    with st.container(border=True):
+        st.markdown("#### 成本拆分")
+        st.markdown(''.join(cost_rows), unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+
 def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> dict[str, Any]:
-    left_col, mid_col, right_col = st.columns([1.1, 3.0, 1.4], gap="large")
-    with left_col:
-        params = render_sidebar_controls()
+    """B 方案主工作台：侧边栏控制参数，主区域为分段导航、产品矩阵与条件报价面板。"""
+    params = render_sidebar_controls()
     product = get_selected_product(df)
-    with mid_col:
-        if st.session_state.page == "home":
-            render_category_selector(df)
-        else:
-            render_breadcrumb(product)
-            render_product_grid(df)
-            if product is not None:
-                render_product_specs(product)
-                render_quote_controls()
+
+    main_col, right_col = st.columns([3.2, 1.35], gap="large")
+    with main_col:
+        filtered_df = render_segmented_navigation(df)
+        render_product_grid(filtered_df)
+        product = get_selected_product(df)
+        if product is not None:
+            render_product_specs(product)
+            render_quote_controls()
     with right_col:
         render_quote_panel(product, params)
     return params
@@ -800,14 +884,17 @@ def render_bottom_tools(df: pd.DataFrame, params: dict[str, Any]) -> None:
     tab_batch, tab_db, tab_template = st.tabs(["批量报价", "产品数据库", "Excel 模板"])
     with tab_batch:
         st.markdown('<p class="page-sub">以当前全局参数对所有产品生成报价汇总表。</p>', unsafe_allow_html=True)
-        c1, c2, c3 = st.columns([1.0, 1.2, 1.0], gap="medium")
+        c1, c2, c3, c4 = st.columns([1, 1, 1, 1], gap="medium")
         with c1:
             plating = st.selectbox("电镀", list(PLATING_RATES.keys()), key="batch_plating")
         with c2:
             destination = st.selectbox("目的地", list(FREIGHT_RATES.keys()), key="batch_destination")
         with c3:
             qty = st.number_input("数量", min_value=1, value=int(st.session_state.quantity), step=100, key="batch_qty")
-        if st.button("生成全产品报价表", use_container_width=True):
+        with c4:
+            st.markdown('<div class="filter-bar-spacer"></div>', unsafe_allow_html=True)
+            generate = st.button("生成全产品报价表", type="primary", use_container_width=True)
+        if generate:
             rows = []
             for _, row in df.iterrows():
                 q = calculate_quote(row, params["copper_price"], plating, [], int(qty), destination, params["currency"], params["exchange_rate"], params["box_l"], params["box_w"], params["box_h"], params["units_per_box"])
@@ -821,11 +908,10 @@ def render_bottom_tools(df: pd.DataFrame, params: dict[str, Any]) -> None:
         st.dataframe(df, use_container_width=True, hide_index=True)
     with tab_template:
         template = pd.DataFrame({"产品名称":["示例产品A","示例产品B"],"系列":["快开","慢开"],"产品总重_g":[65,50],"配件重量_g":[7,2],"净铜重_g":[58,48],"加工费_元":[0.75,0.60],"利润_元":[0.50,0.40],"图片路径":["data/images/示例产品A.png", ""],"总重是否已称量":["已称量","估算值"]})
-        buffer = io.BytesIO(); template.to_excel(buffer, index=False)
+        buffer = io.BytesIO()
+        template.to_excel(buffer, index=False)
         st.download_button("下载 Excel 模板", data=buffer.getvalue(), file_name="产品明细表_模板.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         st.dataframe(template, use_container_width=True, hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
 
 def render_footer() -> None:
     st.markdown(f"<div style='text-align:center;color:#98A2B3;font-size:.66rem;padding:1.2rem 0;'>ValveCore Pricing {APP_VERSION} · 产品参数来自 ./data/products.xlsx · 汇率含 {int((1-EXCHANGE_RATE_MARGIN)*100)}% 安全边际</div>", unsafe_allow_html=True)
