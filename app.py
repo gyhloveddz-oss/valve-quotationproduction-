@@ -92,15 +92,19 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 [data-testid="stIconMaterial"], .material-icons, .material-symbols-rounded, .material-symbols-outlined, span[class*="material"], i[class*="material"] { font-family:'Material Symbols Rounded','Material Symbols Outlined','Material Icons' !important; font-weight:normal !important; font-style:normal !important; font-size:18px !important; line-height:1 !important; letter-spacing:normal !important; text-transform:none !important; display:inline-flex !important; white-space:nowrap !important; word-wrap:normal !important; direction:ltr !important; -webkit-font-feature-settings:'liga' !important; -webkit-font-smoothing:antialiased !important; }
 .stApp { background:var(--bg) !important; color:var(--text) !important; overflow-x:hidden !important; }
 #MainMenu, footer, .stDeployButton, [data-testid="stBaseButton-header"] { display:none !important; }
-/* 保留 Streamlit 原生 header 与 toolbar：Streamlit 1.57 的展开按钮 stExpandSidebarButton 位于该区域，不能 display:none。 */
-header[data-testid="stHeader"], [data-testid="stToolbar"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:999999 !important; }
-.main .block-container { max-width:none !important; padding:1.2rem 2.1rem 1.8rem 2.1rem !important; }
+/* 保留 Streamlit 原生 header 与 toolbar：展开按钮位于该区域，不能 display:none。 */
+[data-testid="stHeader"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:999 !important; }
+[data-testid="stToolbar"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:1000000 !important; }
+.main .block-container { max-width:none !important; padding:0 2.1rem 1.8rem 2.1rem !important; }
 	section[data-testid="stSidebar"] { background:#FFFFFF !important; border-right:1px solid var(--line) !important; }
 	section[data-testid="stSidebar"] > div { background:#FFFFFF !important; }
 	div[data-testid="stVerticalBlockBorderWrapper"] { border-radius:12px !important; border:1px solid #E5E7EB !important; background:#FFFFFF !important; box-shadow:0 1px 3px 0 rgba(0,0,0,.05) !important; }
 	div[data-testid="stVerticalBlockBorderWrapper"] > div { padding:14px !important; }
-	section[data-testid="stSidebar"] [data-testid="stFileUploader"] { text-align:center !important; }
-	section[data-testid="stSidebar"] [data-testid="stFileUploader"] section { justify-content:center !important; align-items:center !important; text-align:center !important; }
+	section[data-testid="stSidebar"] div[data-testid="stVerticalBlockBorderWrapper"] { margin-bottom:12px !important; }
+	section[data-testid="stSidebar"] h4 { margin:0 0 10px 0 !important; padding:0 !important; font-size:.86rem !important; line-height:1.25 !important; }
+	section[data-testid="stSidebar"] [data-testid="stNumberInput"] { margin-bottom:4px !important; }
+	section[data-testid="stSidebar"] [data-testid="stFileUploader"] { width:100% !important; text-align:center !important; }
+	section[data-testid="stSidebar"] [data-testid="stFileUploader"] section { width:100% !important; justify-content:center !important; align-items:center !important; text-align:center !important; }
 	section[data-testid="stSidebar"] [data-testid="stFileUploader"] button { margin-left:auto !important; margin-right:auto !important; }
 	section[data-testid="stSidebar"] .stButton > button { border-radius:10px !important; }
 
@@ -133,9 +137,32 @@ header[data-testid="stHeader"], [data-testid="stToolbar"] { display:flex !import
 	}
 hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
-/* 页面头部：使用普通文档流，避免遮挡 Streamlit 原生侧边栏展开按钮。 */
-.vc-header { position:relative; z-index:1; width:100%; min-height:56px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; margin:0 0 14px 0; background:rgba(255,255,255,.96); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); backdrop-filter:blur(14px); }
-.vc-brand { display:flex; align-items:center; gap:10px; min-width:0; }
+/* 固定顶部栏：玻璃态 SaaS 导航，同时不遮挡 Streamlit 原生侧边栏展开入口。 */
+.custom-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.90) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    z-index: 1000 !important;
+    padding: 12px 24px !important;
+    box-sizing:border-box !important;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    box-shadow:0 10px 30px rgba(15,23,42,.06);
+}
+.main-body-container {
+    margin-top: 85px !important;
+}
+.vc-brand { display:flex; align-items:center; gap:10px; min-width:0; margin-left:318px; }
+.login-shell .vc-brand { margin-left:0 !important; }
+@media (max-width: 980px) { .vc-brand { margin-left:64px; } }
 .vc-logo { width:28px; height:28px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.82rem; font-weight:800; background:linear-gradient(135deg,#7C3AED,#4F46E5); box-shadow:0 8px 18px rgba(109,93,251,.22); }
 .vc-title { color:var(--text); font-size:.95rem; font-weight:800; letter-spacing:-.02em; white-space:nowrap; }
 .vc-subtitle { display:none; }
@@ -164,12 +191,12 @@ label, [data-testid="stWidgetLabel"] { color:var(--muted) !important; font-weigh
 .side-sub { color:var(--muted); font-size:.72rem; line-height:1.55; margin-bottom:14px; }
 .sb-label { display:block; color:#475467; font-size:.72rem; font-weight:800; letter-spacing:.04em; margin:.72rem 0 .38rem; }
 .sb-hint { color:var(--muted); font-size:.7rem; line-height:1.55; margin:.38rem 0 .15rem; }
-.box-hint { text-align:center; font-family:var(--font) !important; padding:8px 10px; border-radius:10px; background:var(--soft); border:1px solid var(--line); color:#667085; white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:1.55; }
-.upload-center { width:100%; display:flex; justify-content:center; align-items:center; }
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] { display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; text-align:center !important; min-height:86px !important; border:1px dashed var(--line-strong) !important; border-radius:14px !important; background:#FBFCFE !important; }
+.box-hint { display:block; width:100%; text-align:center; font-family:var(--font) !important; margin:10px 0 0 0 !important; padding:9px 12px; border-radius:10px; background:var(--soft); border:1px solid var(--line); color:#667085; white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:1.55; font-size:.72rem; }
+.upload-center { width:100%; display:flex; justify-content:center; align-items:center; margin:0 !important; padding:0 !important; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] { display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; text-align:center !important; width:100% !important; min-height:92px !important; padding:14px 12px !important; border:1px dashed var(--line-strong) !important; border-radius:14px !important; background:#FBFCFE !important; }
 div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] * { text-align:center !important; justify-content:center !important; align-items:center !important; margin-left:auto !important; margin-right:auto !important; }
 div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"] { width:100% !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; }
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] button { margin:0 auto !important; display:flex !important; align-items:center !important; justify-content:center !important; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] button { margin:0 auto 4px auto !important; display:flex !important; align-items:center !important; justify-content:center !important; min-width:86px !important; }
 div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] svg, div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] [data-testid="stIconMaterial"] { display:none !important; }
 .version-box { margin-top:16px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--soft); text-align:center; }
 .version-text { color:#344054; font-family:var(--mono) !important; font-size:.72rem; font-weight:800; }
@@ -196,14 +223,14 @@ div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > 
 
 /* 产品卡网格 */
 .products-note { color:var(--muted); font-size:.78rem; margin-bottom:14px; }
-.product-card { min-height:212px; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:all .16s ease; overflow:hidden; }
-.product-card:hover { border-color:#B8BDFD; box-shadow:var(--shadow-hover); transform:translateY(-2px); }
-.product-card.selected { border:2px solid var(--purple); box-shadow:0 0 0 4px rgba(109,93,251,.10), var(--shadow-hover); }
-.product-img-wrap { height:148px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.product-card, .product-card-native { min-height:212px; width:100%; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:all .16s ease; overflow:hidden; box-sizing:border-box; }
+.product-card:hover, .product-card-native:hover { border-color:#B8BDFD; box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.product-card.selected, .product-card-native.selected { border:2px solid var(--purple); box-shadow:0 0 0 4px rgba(109,93,251,.10), var(--shadow-hover); }
+.product-img-wrap { width:100%; height:148px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; box-sizing:border-box; }
 .product-img { width:100%; height:100%; object-fit:contain; display:block; }
 .product-name { margin-top:12px; color:var(--text); font-size:.94rem; font-weight:850; line-height:1.35; white-space:normal; overflow:visible; text-overflow:clip; text-align:center; min-height:2.5em; display:flex; align-items:center; justify-content:center; }
 .product-check { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:var(--purple); color:#fff; font-size:.72rem; font-weight:900; }
-div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margin-top:8px !important; height:38px !important; min-height:38px !important; font-size:.86rem !important; justify-content:center !important; }
+div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button, div[data-testid="stVerticalBlock"]:has(.product-card-native) .stButton > button { margin-top:8px !important; height:38px !important; min-height:38px !important; font-size:.86rem !important; justify-content:center !important; }
 
 /* 规格、控制、报价 */
 .spec-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
@@ -244,14 +271,19 @@ div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margi
 .login-title { font-size:1.2rem; font-weight:850; color:var(--text); margin-bottom:4px; }
 .login-sub { color:var(--muted); font-size:.82rem; line-height:1.65; }
 [data-testid="stDataFrame"] * { font-family:var(--mono) !important; }
-div[data-testid="stSegmentedControl"] { margin-bottom:12px !important; }
-	div[data-testid="stSegmentedControl"] label { font-weight:700 !important; color:#344054 !important; }
+div[data-testid="stButtonGroup"] { margin-bottom:12px !important; }
+	div[data-testid="stButtonGroup"] label { font-weight:700 !important; color:#344054 !important; }
+	div[data-testid="stButtonGroup"] [role="radiogroup"] { display:inline-flex !important; gap:4px !important; padding:4px !important; border:1px solid var(--line) !important; border-radius:14px !important; background:rgba(255,255,255,.82) !important; box-shadow:0 1px 2px rgba(15,23,42,.04) !important; }
+	div[data-testid="stButtonGroup"] button[data-testid="stBaseButton-segmented_control"], div[data-testid="stButtonGroup"] button[data-testid="stBaseButton-segmented_controlActive"] { min-height:32px !important; border-radius:10px !important; border:1px solid transparent !important; background:#FFFFFF !important; color:#475467 !important; box-shadow:none !important; font-weight:750 !important; }
+	div[data-testid="stButtonGroup"] button[data-testid="stBaseButton-segmented_control"] * { color:#475467 !important; }
+	div[data-testid="stButtonGroup"] button[data-testid="stBaseButton-segmented_controlActive"] { border-color:#DAD7FE !important; background:var(--purple-soft) !important; color:var(--purple) !important; box-shadow:0 1px 6px rgba(101,79,240,.14) !important; }
+	div[data-testid="stButtonGroup"] button[data-testid="stBaseButton-segmented_controlActive"] * { color:var(--purple) !important; }
 	.filter-bar-spacer { height:28px; }
 	[data-testid="stTabs"] { margin-top:22px !important; }
 	[data-testid="stTabs"] [role="tablist"] { gap:8px !important; }
 	[data-testid="stTabs"] [role="tab"] { padding:8px 12px !important; }
 	@media (max-width: 1180px) { .main .block-container { padding-left:1rem !important; padding-right:1rem !important; } .quote-pane, .quote-card { min-width:300px; } .product-img-wrap { height:120px; } }
-@media (max-width: 980px) { .quote-pane { position:relative; top:auto; min-width:100%; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .vc-header { padding:10px 12px; flex-wrap:wrap; } }
+@media (max-width: 980px) { .quote-pane { position:relative; top:auto; min-width:100%; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .custom-navbar { padding:10px 12px !important; flex-wrap:wrap; height:auto; min-height:70px; } }
 </style>
         """,
         unsafe_allow_html=True,
@@ -661,7 +693,7 @@ def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
     copper_dot = "dot-green" if st.session_state.copper_source != "默认值" else "dot-yellow"
     rate_dot = "dot-green" if st.session_state.rates.get("_success") else "dot-yellow"
     st.markdown(f"""
-    <div class="vc-header">
+    <div class="custom-navbar">
       <div class="vc-brand"><div class="vc-logo">成</div><div><div class="vc-title">{APP_NAME}</div><div class="vc-subtitle">{APP_SUBTITLE}</div></div></div>
       <div class="status-row">
         <span class="status-chip"><span class="dot {copper_dot}"></span>铜价 ¥{params['copper_price']:,.0f}</span>
@@ -697,34 +729,31 @@ def render_breadcrumb(product: pd.Series | None = None) -> None:
         st.markdown(f'<span class="crumb-current">{product_label}</span>', unsafe_allow_html=True)
 
 def render_segmented_navigation(df: pd.DataFrame) -> pd.DataFrame:
-    """B 方案：用原生 segmented_control 替代面包屑与系列文本导航。"""
-    categories = list(df["系列"].dropna().astype(str).unique())
-    options = ["所有系列"] + [f"{category}系列" for category in categories] + ["产品列表"]
+    """用清晰的产品线维度筛选产品矩阵，避免「全量列表」语义重复。"""
+    series_options = ["全系列", "快开系列", "慢开系列"]
+    current = "全系列"
     if st.session_state.selected_cat:
-        current = f"{st.session_state.selected_cat}系列"
-    elif st.session_state.page == "product" and st.session_state.selected_prod:
-        current = "产品列表"
-    else:
-        current = "所有系列"
-    if current not in options:
-        current = "所有系列"
+        normalized_cat = str(st.session_state.selected_cat).replace("系列", "")
+        candidate = f"{normalized_cat}系列"
+        if candidate in series_options:
+            current = candidate
 
-    selected = st.segmented_control("切换系列", options, default=current, key="series_segmented_control")
-    selected = selected or current
+    selected_series = st.segmented_control(
+        "选择阀芯系列", 
+        options=["全系列", "快开系列", "慢开系列"], 
+        default=current,
+        key="series_segmented_control",
+    )
+    selected_series = selected_series or current
 
-    if selected == "所有系列":
-        st.session_state.page = "collection"
-        st.session_state.selected_cat = None
-        filtered = df.reset_index(drop=True)
-    elif selected == "产品列表":
-        st.session_state.page = "collection"
+    st.session_state.page = "collection"
+    if selected_series == "全系列":
         st.session_state.selected_cat = None
         filtered = df.reset_index(drop=True)
     else:
-        category = selected[:-2] if selected.endswith("系列") else selected
-        st.session_state.page = "collection"
+        category = selected_series.replace("系列", "")
         st.session_state.selected_cat = category
-        filtered = df[df["系列"].astype(str) == str(category)].reset_index(drop=True)
+        filtered = df[df["系列"].astype(str).str.replace("系列", "", regex=False) == category].reset_index(drop=True)
 
     if st.session_state.selected_prod and st.session_state.selected_prod not in set(filtered["产品名称"].astype(str)):
         st.session_state.selected_prod = None
@@ -791,7 +820,7 @@ def render_product_grid(df: pd.DataFrame) -> None:
         st.info("暂无产品数据。")
         return
 
-    grid_cols = st.columns(4, gap="large")
+    grid_cols = st.columns(4, gap="small")
     for idx, (_, product) in enumerate(cat_df.iterrows()):
         selected = str(st.session_state.selected_prod) == str(product["产品名称"])
         img_src = product_image_src(product)
@@ -960,6 +989,7 @@ def main() -> None:
     ensure_valid_selection(products_df)
     header_params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate}
     render_header(products_df, header_params)
+    st.markdown('<div class="main-body-container"></div>', unsafe_allow_html=True)
     params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate, "box_l": st.session_state.box_l, "box_w": st.session_state.box_w, "box_h": st.session_state.box_h, "units_per_box": st.session_state.units_per_box}
     params = render_workbench(products_df, params)
     render_bottom_tools(products_df, params)
