@@ -135,6 +135,69 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 		box-shadow:0 6px 18px rgba(15,23,42,.14) !important;
 		color:#111827 !important;
 	}
+
+    /* 1. Force the hidden sidebar toggle button back into existence */
+    [data-testid="stSidebarCollapseButton"] {
+        position: fixed !important;
+        top: 15px !important;       /* Align perfectly with the sticky navbar height */
+        left: 20px !important;      /* Force it to float on top of the left edge */
+        z-index: 999999 !important; /* Ensure it overrides ALL elements, headers, and backgrounds */
+        display: flex !important;   /* Guarantee it is not hidden by display: none */
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        
+        /* Modern Floating Button UI styling to match our SaaS look */
+        background-color: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+        padding: 6px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Streamlit collapsed-state expand button uses a separate test id in recent versions. */
+    [data-testid="stExpandSidebarButton"],
+    [data-testid="collapsedControl"] {
+        position: fixed !important;
+        top: 15px !important;
+        left: 20px !important;
+        z-index: 999999 !important;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+        padding: 6px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* 2. Fix hover state so it reacts to user interaction */
+    [data-testid="stSidebarCollapseButton"]:hover,
+    [data-testid="stExpandSidebarButton"]:hover,
+    [data-testid="collapsedControl"]:hover {
+        background-color: #F3F4F6 !important;
+        border-color: #D1D5DB !important;
+        cursor: pointer !important;
+    }
+
+    /* 3. Safety margin adjustment: Ensure the main container doesn't block the left corner */
+    .stApp [data-testid="stHeader"] {
+        padding-left: 60px !important; /* Give the toggle button breathing room */
+    }
 hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
 /* 固定顶部栏：玻璃态 SaaS 导航，同时不遮挡 Streamlit 原生侧边栏展开入口。 */
@@ -156,7 +219,9 @@ hr { border-color:var(--line) !important; margin:1rem 0 !important; }
     justify-content:space-between;
     gap:12px;
     box-shadow:0 10px 30px rgba(15,23,42,.06);
+    pointer-events:none !important;
 }
+.custom-navbar * { pointer-events:none !important; }
 .main-body-container {
     margin-top: 85px !important;
 }
