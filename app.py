@@ -126,9 +126,12 @@ label, [data-testid="stWidgetLabel"] { color:var(--muted) !important; font-weigh
 .side-sub { color:var(--muted); font-size:.72rem; line-height:1.55; margin-bottom:14px; }
 .sb-label { display:block; color:#475467; font-size:.72rem; font-weight:800; letter-spacing:.04em; margin:.72rem 0 .38rem; }
 .sb-hint { color:var(--muted); font-size:.7rem; line-height:1.55; margin:.38rem 0 .15rem; }
-.box-hint { text-align:center; font-family:var(--mono) !important; padding:8px 10px; border-radius:10px; background:var(--soft); border:1px solid var(--line); color:#667085; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.box-hint { text-align:center; font-family:var(--font) !important; padding:8px 10px; border-radius:10px; background:var(--soft); border:1px solid var(--line); color:#667085; white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; line-height:1.55; }
 .upload-center { width:100%; display:flex; justify-content:center; align-items:center; }
-div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] { display:flex !important; align-items:center !important; justify-content:center !important; text-align:center !important; min-height:86px !important; border:1px dashed var(--line-strong) !important; border-radius:14px !important; background:#FBFCFE !important; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] { display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; text-align:center !important; min-height:86px !important; border:1px dashed var(--line-strong) !important; border-radius:14px !important; background:#FBFCFE !important; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] * { text-align:center !important; justify-content:center !important; align-items:center !important; margin-left:auto !important; margin-right:auto !important; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"] { width:100% !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; }
+div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] button { margin:0 auto !important; display:flex !important; align-items:center !important; justify-content:center !important; }
 div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] svg, div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploaderDropzone"] [data-testid="stIconMaterial"] { display:none !important; }
 .version-box { margin-top:16px; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--soft); text-align:center; }
 .version-text { color:#344054; font-family:var(--mono) !important; font-size:.72rem; font-weight:800; }
@@ -137,14 +140,11 @@ div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploa
 .page-title { font-size:1.15rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
 .page-sub { color:var(--muted); font-size:.8rem; line-height:1.65; margin-bottom:1rem; }
 .section-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); }
-.breadcrumb-wrap { display:flex; align-items:center; gap:12px; margin:0 0 16px 0; padding:10px 0; font-size:16px !important; line-height:1; color:#667085; }
-.crumb-link, .crumb-current, .crumb-sep { display:inline-flex; align-items:center; margin:0; padding:0; font-size:16px !important; line-height:1; white-space:nowrap; }
-.crumb-link { color:#475467; font-weight:750; }
-.crumb-sep { color:var(--subtle); }
-.crumb-current { color:var(--purple); font-weight:850; }
-div[data-testid="stHorizontalBlock"]:has(.breadcrumb-click-row) { margin-top:-50px !important; height:42px !important; overflow:hidden !important; }
-div[data-testid="stMarkdownContainer"]:has(.breadcrumb-click-row) { display:none !important; }
-div[data-testid="stHorizontalBlock"]:has(.breadcrumb-click-row) .stButton > button { height:42px !important; min-height:42px !important; opacity:.001 !important; border:0 !important; box-shadow:none !important; background:transparent !important; cursor:pointer !important; }
+.breadcrumb-wrap { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin:0 0 8px 0; padding:2px 0 4px; }
+.crumb-sep { display:inline-flex; align-items:center; min-height:32px; color:var(--subtle); padding:0 1px; font-size:15px !important; line-height:1; }
+.crumb-current { display:inline-flex; align-items:center; min-height:32px; color:var(--purple); font-weight:850; padding:6px 10px; border-radius:10px; background:var(--purple-soft); font-size:15px !important; line-height:1.15; white-space:normal; }
+div[data-testid="stHorizontalBlock"]:has(.breadcrumb-wrap) { margin-bottom:8px !important; }
+div[data-testid="stHorizontalBlock"]:has(.breadcrumb-wrap) .stButton > button { min-height:32px !important; padding:6px 10px !important; font-size:15px !important; border-radius:10px !important; box-shadow:none !important; font-weight:750 !important; background:#fff !important; }
 
 /* 首页系列卡 */
 .series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:all .16s ease; }
@@ -200,7 +200,7 @@ div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margi
 .cost-name { color:#475467; font-size:.72rem; font-weight:700; white-space:nowrap; }
 .cost-val { color:#101828; font-family:var(--mono) !important; font-size:.72rem; text-align:right; white-space:nowrap; }
 .cost-pct { color:#98A2B3; font-size:.66rem; text-align:right; white-space:nowrap; }
-.formula { margin-top:10px; padding:8px 10px; border:1px solid var(--line); border-radius:12px; background:#fff; font-family:'Inter',var(--mono) !important; color:#475467; font-size:.66rem; font-weight:450; line-height:1.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.formula { padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; font-family:var(--font) !important; color:#475467; font-size:.72rem; font-weight:500; line-height:1.7; white-space:pre-wrap; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; }
 .tool-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); margin-top:18px; }
 .login-shell { max-width:420px; margin:12vh auto 1.5rem; padding:30px; border:1px solid var(--line); border-radius:22px; background:#fff; box-shadow:var(--shadow); }
 .login-title { font-size:1.2rem; font-weight:850; color:var(--text); margin-bottom:4px; }
@@ -519,7 +519,7 @@ def render_sidebar_controls() -> dict[str, Any]:
     st.markdown('<span class="sb-label">铜价（元/吨）</span>', unsafe_allow_html=True)
     copper_price = st.number_input("铜价", min_value=40000, max_value=150000, value=int(st.session_state.copper_price), step=100, label_visibility="collapsed")
     st.session_state.copper_price = copper_price
-    if st.button("同步实时铜价", key="sync_copper", use_container_width=True):
+    if st.button("同步/更新铜价", key="sync_copper", use_container_width=True):
         with st.spinner("同步铜价中..."):
             result = cached_copper_price()
             st.session_state.copper_price = float(result.get("price", DEFAULT_COPPER_PRICE))
@@ -538,7 +538,7 @@ def render_sidebar_controls() -> dict[str, Any]:
     if currency != "RMB":
         effective_rate = round(exchange_rate * EXCHANGE_RATE_MARGIN, 4)
         st.markdown(f'<p class="sb-hint">报价汇率 = {exchange_rate} × {EXCHANGE_RATE_MARGIN} = <b>{effective_rate}</b></p>', unsafe_allow_html=True)
-    if st.button("同步实时汇率", key="sync_rates", use_container_width=True):
+    if st.button("同步/更新汇率", key="sync_rates", use_container_width=True):
         with st.spinner("同步汇率中..."):
             st.session_state.rates = cached_exchange_rates()
         st.rerun()
@@ -554,7 +554,7 @@ def render_sidebar_controls() -> dict[str, Any]:
         box_h = st.number_input("高cm", value=int(st.session_state.box_h), step=1, format="%d", label_visibility="collapsed")
     units_per_box = st.number_input("每箱数量", min_value=1, value=int(st.session_state.units_per_box), step=10, label_visibility="collapsed")
     cbm_val = round(box_l * box_w * box_h / 1_000_000, 4)
-    st.markdown(f'<p class="sb-hint box-hint">{box_l:.0f}×{box_w:.0f}×{box_h:.0f} cm · {cbm_val} CBM · {units_per_box} 只/箱</p>', unsafe_allow_html=True)
+    st.markdown(f'<p class="sb-hint box-hint">{box_l:.0f}×{box_w:.0f}×{box_h:.0f} cm · {cbm_val:.2f} CBM · {int(units_per_box)} PCS</p>', unsafe_allow_html=True)
     st.session_state.box_l, st.session_state.box_w, st.session_state.box_h = box_l, box_w, box_h
     st.session_state.units_per_box = units_per_box
 
@@ -595,31 +595,28 @@ def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
 
 
 def render_breadcrumb(product: pd.Series | None = None) -> None:
-    """单行 HTML 面包屑：字号、间距和基线完全一致；透明按钮保留状态机交互。"""
+    """响应式可点击面包屑：使用可见 st.button 模拟链接，所有跳转均在单页 session_state 内完成。"""
     selected_cat = st.session_state.selected_cat
-    product_label = html.escape(str(product["产品名称"])) if product is not None else "产品列表"
-    cat_label = html.escape(str(selected_cat)) + "系列" if selected_cat else "选择系列"
-    st.markdown(
-        f'<nav class="breadcrumb-wrap" aria-label="breadcrumb">'
-        f'<span class="crumb-link">所有系列</span>'
-        f'<span class="crumb-sep">/</span>'
-        f'<span class="crumb-link">{cat_label}</span>'
-        f'<span class="crumb-sep">/</span>'
-        f'<span class="crumb-current">{product_label}</span>'
-        f'</nav>',
-        unsafe_allow_html=True,
-    )
-    st.markdown('<div class="breadcrumb-click-row"></div>', unsafe_allow_html=True)
-    click_cols = st.columns([1.0, 1.0, 2.4, 5.0], gap="small")
-    with click_cols[0]:
-        if st.button("所有系列", key="crumb_all_click", use_container_width=True):
+    st.markdown('<div class="breadcrumb-wrap"></div>', unsafe_allow_html=True)
+    cols = st.columns([1.0, 0.10, 1.15, 0.10, 2.3, 4.0], gap="small")
+    with cols[0]:
+        if st.button("所有系列", key="crumb_all", use_container_width=True):
             reset_to_home()
-    with click_cols[1]:
-        if st.button("当前系列", key="crumb_cat_click", use_container_width=True, disabled=not bool(selected_cat)):
-            st.session_state.page = "collection"
-            st.session_state.selected_prod = None
-            st.rerun()
-
+    with cols[1]:
+        st.markdown('<span class="crumb-sep">/</span>', unsafe_allow_html=True)
+    with cols[2]:
+        if selected_cat:
+            if st.button(f"{selected_cat}系列", key="crumb_cat", use_container_width=True):
+                st.session_state.page = "collection"
+                st.session_state.selected_prod = None
+                st.rerun()
+        else:
+            st.markdown('<span class="crumb-current">选择系列</span>', unsafe_allow_html=True)
+    with cols[3]:
+        st.markdown('<span class="crumb-sep">/</span>', unsafe_allow_html=True)
+    with cols[4]:
+        product_label = html.escape(str(product["产品名称"])) if product is not None else "产品列表"
+        st.markdown(f'<span class="crumb-current">{product_label}</span>', unsafe_allow_html=True)
 
 def product_image_src(product_row: pd.Series) -> str:
     explicit_path = resolve_relative_path(product_row.get("图片路径", ""))
@@ -677,7 +674,6 @@ def get_selected_product(df: pd.DataFrame) -> pd.Series | None:
 def render_product_grid(df: pd.DataFrame) -> None:
     selected_cat = st.session_state.selected_cat
     cat_df = df[df["系列"].astype(str) == str(selected_cat)].reset_index(drop=True) if selected_cat else df.reset_index(drop=True)
-    st.markdown(f'<div class="products-note">当前系列：<b>{html.escape(str(selected_cat or "全部"))}</b>。产品卡片仅保留图片与名称，选择后右侧实时生成报价。</div>', unsafe_allow_html=True)
     if cat_df.empty:
         st.markdown('<div class="products-note">暂无产品数据。</div>', unsafe_allow_html=True)
         return
@@ -742,23 +738,44 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
         val = float(quote.get(name, 0))
         pct = val / cost_total * 100
         cost_rows.append(f'<div class="cost-row"><div class="cost-dot" style="background:{cost_colors[name]};"></div><div class="cost-name">{name}</div><div class="cost-val">¥{val:.4f}</div><div class="cost-pct">{pct:.0f}%</div></div>')
+
+    packaging_total = sum(PACKAGING_FEES.get(option, 0.0) for option in st.session_state.packaging)
+    plating_rate = PLATING_RATES.get(st.session_state.plating, 0.0)
+    freight_rate = FREIGHT_RATES.get(st.session_state.destination, 0.0)
     formula = (
-        f"材料 {quote['net_g']}g × ¥{params['copper_price']:,.0f}/吨 → RMB ¥{quote['rmb']:.4f} → 外币 {symbol}{quote['fgn']:.4f}，有效汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}"
+        f"产品：{product['产品名称']}\n"
+        f"净铜重：{quote['net_g']:.1f} g\n"
+        f"标准箱规格：{params['box_l']:.0f}×{params['box_w']:.0f}×{params['box_h']:.0f} cm · {quote['cbm']:.2f} CBM · {int(params['units_per_box'])} PCS\n"
+        f"原材料 = {quote['net_g']:.1f} g × ¥{params['copper_price']:,.0f}/吨 ÷ 1,000,000 = ¥{quote['原材料']:.4f}\n"
+        f"加工配件 = ¥{quote['加工配件']:.4f}\n"
+        f"电镀 = {quote['net_g']:.1f} g × {plating_rate} ÷ 1,000,000 = ¥{quote['电镀']:.4f}（{st.session_state.plating}）\n"
+        f"包装 = ¥{packaging_total:.4f}（{', '.join(st.session_state.packaging) if st.session_state.packaging else '无'}）\n"
+        f"运费 = {freight_rate} × {quote['cbm']:.2f} CBM ÷ {int(params['units_per_box'])} PCS × {params['exchange_rate']} = ¥{quote['运费']:.4f}（{st.session_state.destination}）\n"
+        f"利润 = ¥{quote['利润']:.4f}\n"
+        f"人民币单价 = 原材料 + 加工配件 + 电镀 + 包装 + 运费 + 利润 = ¥{quote['rmb']:.4f}\n"
+        f"有效汇率 = {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}\n"
+        f"外币单价 = 人民币单价 ÷ 有效汇率 = {symbol}{quote['fgn']:.4f}\n"
+        f"订单总价 = {symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity)} PCS = {symbol}{quote['total']:,.2f}"
     )
+
     st.markdown(f"""
     <div class="quote-card">
       <div class="panel-kicker"><span>QUOTE SUMMARY</span><span>{params['currency']} / 只</span></div>
       <div class="panel-product">{html.escape(str(product['产品名称']))}</div>
       <div class="price-hero"><div class="ph-row"><div class="ph-label">单件报价</div><div class="ph-currency">{params['currency']} / 只</div></div><div class="ph-amount">{symbol}{quote['fgn']:.4f}</div><div class="ph-rmb">¥{quote['rmb']:.4f} RMB</div><div class="ph-sub">汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}，含安全边际。</div></div>
+    </div>
+    """, unsafe_allow_html=True)
+    with st.expander("查看详细计算公式", expanded=False):
+        st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="quote-card" style="margin-top:10px;">
       <div class="metric-grid"><div class="metric-tile"><div class="mt-label">人民币单价</div><div class="mt-val">¥{quote['rmb']:.4f}</div><div class="mt-sub">元 / 只</div></div><div class="metric-tile"><div class="mt-label">净铜重</div><div class="mt-val">{quote['net_g']:.1f}g</div><div class="mt-sub">铜价 ¥{params['copper_price']:,.0f}</div></div></div>
       <div class="order-total"><div class="ot-label">订单总价 <span style="float:right;color:#98A2B3;">{int(st.session_state.quantity)} 只</span></div><div class="ot-val">{symbol}{quote['total']:,.2f}</div><div class="ot-sub">{symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity)} {params['currency']}</div></div>
       <div class="margin-row"><div class="margin-label">利润率</div><div class="margin-pill {margin_cls}">+ {quote['margin']:.1f}%</div></div>
       {''.join(cost_rows)}
     </div>
     """, unsafe_allow_html=True)
-    st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
 
 def render_workbench(df: pd.DataFrame, params: dict[str, Any]) -> dict[str, Any]:
     left_col, mid_col, right_col = st.columns([1.1, 3.0, 1.4], gap="large")
