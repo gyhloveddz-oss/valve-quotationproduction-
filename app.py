@@ -21,6 +21,7 @@ from typing import Any, Iterable
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from config import (
     APP_NAME,
@@ -91,10 +92,12 @@ def inject_css() -> None:
 html, body, .stApp, .main, button, input, textarea, select, label, p, div, span { font-family:var(--font); }
 [data-testid="stIconMaterial"], .material-icons, .material-symbols-rounded, .material-symbols-outlined, span[class*="material"], i[class*="material"] { font-family:'Material Symbols Rounded','Material Symbols Outlined','Material Icons' !important; font-weight:normal !important; font-style:normal !important; font-size:18px !important; line-height:1 !important; letter-spacing:normal !important; text-transform:none !important; display:inline-flex !important; white-space:nowrap !important; word-wrap:normal !important; direction:ltr !important; -webkit-font-feature-settings:'liga' !important; -webkit-font-smoothing:antialiased !important; }
 .stApp { background:var(--bg) !important; color:var(--text) !important; overflow-x:hidden !important; }
-#MainMenu, footer, .stDeployButton, [data-testid="stBaseButton-header"] { display:none !important; }
-/* 保留 Streamlit 原生 header 与 toolbar：展开按钮位于该区域，不能 display:none。 */
+#MainMenu, footer, .stDeployButton { display:none !important; }
+	/* 保留 Streamlit 原生 header、toolbar 与 header base button：侧边栏展开/收起按钮位于该区域，不能用通配选择器 display:none 误伤。 */
 [data-testid="stHeader"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:999 !important; }
-[data-testid="stToolbar"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:1000000 !important; }
+	[data-testid="stToolbar"] { display:flex !important; background:transparent !important; box-shadow:none !important; z-index:1000000 !important; }
+	[data-testid="stBaseButton-header"] { display:inline-flex !important; visibility:visible !important; opacity:1 !important; pointer-events:auto !important; }
+
 .main .block-container { max-width:none !important; padding:0 2.1rem 1.8rem 2.1rem !important; }
 	section[data-testid="stSidebar"] { background:#FFFFFF !important; border-right:1px solid var(--line) !important; }
 	section[data-testid="stSidebar"] > div { background:#FFFFFF !important; }
@@ -108,11 +111,52 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 	section[data-testid="stSidebar"] [data-testid="stFileUploader"] button { margin-left:auto !important; margin-right:auto !important; }
 	section[data-testid="stSidebar"] .stButton > button { border-radius:10px !important; }
 
+	/* 独立悬浮侧边栏控制器：由前端桥接脚本插入到父页面，避免只依赖 Streamlit 原生按钮是否渲染。 */
+	#vc-sidebar-floating-toggle {
+		position: fixed !important;
+		top: 15px !important;
+		left: 20px !important;
+		z-index: 2147483647 !important;
+		display: inline-flex !important;
+		visibility: visible !important;
+		opacity: 1 !important;
+		align-items: center !important;
+		justify-content: center !important;
+		width: 34px !important;
+		height: 34px !important;
+		min-width: 34px !important;
+		min-height: 34px !important;
+		padding: 0 !important;
+		background: #FFFFFF !important;
+		border: 1px solid #E5E7EB !important;
+		border-radius: 9px !important;
+		box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16) !important;
+		color: #111827 !important;
+		font-size: 20px !important;
+		font-weight: 800 !important;
+		line-height: 1 !important;
+		cursor: pointer !important;
+		pointer-events: auto !important;
+		user-select: none !important;
+	}
+	#vc-sidebar-floating-toggle:hover {
+		background: #F3F4F6 !important;
+		border-color: #D1D5DB !important;
+		transform: translateY(-1px);
+	}
+	#vc-sidebar-floating-toggle:active { transform: translateY(0); }
+	#vc-sidebar-floating-toggle .vc-sidebar-toggle-icon {
+		font-family: Arial, Helvetica, sans-serif !important;
+		font-size: 22px !important;
+		line-height: 1 !important;
+		margin-top: -1px !important;
+	}
+
 	/* 侧边栏控制器必须保持可见可点：不要隐藏原生 header，也不要用固定顶栏覆盖左上角。 */
 	[data-testid="stSidebarCollapseButton"],
 	[data-testid="collapsedControl"],
 	[data-testid="stExpandSidebarButton"] {
-		z-index:1000000 !important;
+		z-index:2147483647 !important;
 		opacity:1 !important;
 		visibility:visible !important;
 		pointer-events:auto !important;
@@ -141,7 +185,7 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
         position: fixed !important;
         top: 15px !important;       /* Align perfectly with the sticky navbar height */
         left: 20px !important;      /* Force it to float on top of the left edge */
-        z-index: 999999 !important; /* Ensure it overrides ALL elements, headers, and backgrounds */
+        z-index: 2147483647 !important; /* Ensure it overrides ALL elements, headers, and backgrounds */
         display: flex !important;   /* Guarantee it is not hidden by display: none */
         visibility: visible !important;
         opacity: 1 !important;
@@ -167,7 +211,7 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
         position: fixed !important;
         top: 15px !important;
         left: 20px !important;
-        z-index: 999999 !important;
+        z-index: 2147483647 !important;
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
@@ -200,7 +244,7 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
     }
 hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
-/* 固定顶部栏：玻璃态 SaaS 导航，同时不遮挡 Streamlit 原生侧边栏展开入口。 */
+	/* 固定顶部栏：玻璃态 SaaS 导航，同时不遮挡 Streamlit 原生与独立悬浮侧边栏入口。 */
 .custom-navbar {
     position: fixed;
     top: 0;
@@ -753,6 +797,165 @@ def render_sidebar_controls() -> dict[str, Any]:
         "units_per_box": st.session_state.units_per_box,
     }
 
+def inject_sidebar_toggle_bridge() -> None:
+    """插入独立悬浮侧边栏开关，桥接点击 Streamlit 原生展开/收起按钮。
+
+    说明：部分 Streamlit Cloud/浏览器组合在侧边栏收起后不会稳定显示
+    `stExpandSidebarButton`。因此这里使用一个独立插入到父页面的浮层按钮，
+    它始终固定在左上角，并在点击时主动寻找当前可用的 Streamlit 原生按钮
+    进行代理点击。这样即使原生按钮不可见，用户也能看到稳定的回归入口。
+    """
+    components.html(
+        """
+<script>
+(function () {
+  const BUTTON_ID = "vc-sidebar-floating-toggle";
+  const STYLE_ID = "vc-sidebar-floating-toggle-style";
+  const parentWindow = window.parent || window;
+  const doc = parentWindow.document || document;
+
+  function ensureStyle() {
+    if (doc.getElementById(STYLE_ID)) return;
+    const style = doc.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = `
+      #${BUTTON_ID} {
+        position: fixed !important;
+        top: 15px !important;
+        left: 20px !important;
+        z-index: 2147483647 !important;
+        display: inline-flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        padding: 0 !important;
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 9px !important;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16) !important;
+        color: #111827 !important;
+        font-size: 22px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        user-select: none !important;
+      }
+      #${BUTTON_ID}:hover {
+        background: #F3F4F6 !important;
+        border-color: #D1D5DB !important;
+      }
+      #${BUTTON_ID} .vc-sidebar-toggle-icon {
+        font-family: Arial, Helvetica, sans-serif !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+        margin-top: -1px !important;
+      }
+    `;
+    doc.head.appendChild(style);
+  }
+
+  function isVisible(el) {
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    const style = parentWindow.getComputedStyle(el);
+    return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+  }
+
+  function sidebarExpanded() {
+    const sidebar = doc.querySelector('section[data-testid="stSidebar"]');
+    if (!sidebar) return false;
+    const rect = sidebar.getBoundingClientRect();
+    const style = parentWindow.getComputedStyle(sidebar);
+    return style.display !== "none" && style.visibility !== "hidden" && rect.width > 120;
+  }
+
+  function nativeCandidates(expanded) {
+    const preferred = expanded
+      ? ['[data-testid="stSidebarCollapseButton"]']
+      : ['[data-testid="stExpandSidebarButton"]', '[data-testid="collapsedControl"]'];
+    const fallback = [
+      'button[aria-label*="sidebar" i]',
+      'button[title*="sidebar" i]',
+      '[role="button"][aria-label*="sidebar" i]',
+      '[role="button"][title*="sidebar" i]'
+    ];
+    return preferred.concat(fallback);
+  }
+
+  function findNativeToggle(expanded) {
+    for (const selector of nativeCandidates(expanded)) {
+      const nodes = Array.from(doc.querySelectorAll(selector));
+      const visible = nodes.find(isVisible);
+      if (visible) return visible;
+      if (nodes.length) return nodes[0];
+    }
+
+    const buttons = Array.from(doc.querySelectorAll('button, [role="button"]'));
+    return buttons.find((node) => {
+      if (node.id === BUTTON_ID) return false;
+      const text = (node.innerText || node.textContent || "").trim();
+      const label = `${node.getAttribute("aria-label") || ""} ${node.getAttribute("title") || ""}`.toLowerCase();
+      return /keyboard_double_arrow|chevron|sidebar|侧边栏|展开|收起|menu/.test(text + " " + label);
+    }) || null;
+  }
+
+  function ensureButton() {
+    ensureStyle();
+    let btn = doc.getElementById(BUTTON_ID);
+    if (!btn) {
+      btn = doc.createElement("button");
+      btn.id = BUTTON_ID;
+      btn.type = "button";
+      btn.setAttribute("aria-label", "展开或收起侧边栏");
+      btn.title = "展开或收起侧边栏";
+      btn.innerHTML = '<span class="vc-sidebar-toggle-icon">›</span>';
+      doc.body.appendChild(btn);
+      btn.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const expanded = sidebarExpanded();
+        const nativeBtn = findNativeToggle(expanded);
+        if (nativeBtn) {
+          nativeBtn.click();
+          parentWindow.setTimeout(updateIcon, 220);
+        }
+      }, true);
+    }
+    btn.style.setProperty("display", "inline-flex", "important");
+    btn.style.setProperty("visibility", "visible", "important");
+    btn.style.setProperty("opacity", "1", "important");
+    btn.style.setProperty("z-index", "2147483647", "important");
+    updateIcon();
+  }
+
+  function updateIcon() {
+    const btn = doc.getElementById(BUTTON_ID);
+    if (!btn) return;
+    const expanded = sidebarExpanded();
+    const icon = btn.querySelector(".vc-sidebar-toggle-icon");
+    if (icon) icon.textContent = expanded ? "‹" : "›";
+    btn.setAttribute("aria-label", expanded ? "收起侧边栏" : "展开侧边栏");
+    btn.title = expanded ? "收起侧边栏" : "展开侧边栏";
+  }
+
+  ensureButton();
+  const observer = new MutationObserver(ensureButton);
+  observer.observe(doc.body, { childList: true, subtree: true, attributes: true });
+  parentWindow.setInterval(ensureButton, 700);
+})();
+</script>
+        """,
+        height=1,
+        width=1,
+    )
+
+
 def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
     now = datetime.now().strftime("%H:%M")
     copper_dot = "dot-green" if st.session_state.copper_source != "默认值" else "dot-yellow"
@@ -1054,6 +1257,7 @@ def main() -> None:
     ensure_valid_selection(products_df)
     header_params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate}
     render_header(products_df, header_params)
+    inject_sidebar_toggle_bridge()
     st.markdown('<div class="main-body-container"></div>', unsafe_allow_html=True)
     params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate, "box_l": st.session_state.box_l, "box_w": st.session_state.box_w, "box_h": st.session_state.box_h, "units_per_box": st.session_state.units_per_box}
     params = render_workbench(products_df, params)
