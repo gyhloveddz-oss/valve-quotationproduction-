@@ -138,12 +138,15 @@ div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploa
 .page-sub { color:var(--muted); font-size:.8rem; line-height:1.65; margin-bottom:1rem; }
 .section-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); }
 	.breadcrumb-anchor { width:0; height:0; overflow:hidden; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) [data-testid="column"] { display:flex !important; align-items:center !important; min-height:38px !important; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) [data-testid="stHorizontalBlock"] { align-items:center !important; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) [data-testid="column"] { display:flex !important; align-items:center !important; min-height:36px !important; padding-top:0 !important; padding-bottom:0 !important; }
 	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton { margin:0 !important; width:100% !important; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button { height:34px !important; min-height:34px !important; padding:0 14px !important; margin:0 !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; line-height:34px !important; font-size:14px !important; color:#475467 !important; background:#FFFFFF !important; border:1px solid var(--line-strong) !important; border-radius:12px !important; transform:none !important; box-shadow:0 1px 2px rgba(15,23,42,.035) !important; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button:hover { transform:none !important; color:var(--purple) !important; border-color:#B8BDFD !important; background:#FBFAFF !important; }
-	.breadcrumb-current-text { display:flex; align-items:center; height:34px; color:var(--purple); font-weight:850; font-size:14px; line-height:34px; white-space:nowrap; padding:0; margin:0; }
-	.breadcrumb-sep-text { display:flex; align-items:center; justify-content:center; height:34px; color:var(--subtle); font-weight:750; font-size:14px; line-height:34px; text-align:center; padding:0; margin:0; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button,
+	.breadcrumb-current-text { height:34px !important; min-height:34px !important; padding:0 14px !important; margin:0 !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; line-height:34px !important; font-size:14px !important; color:#475467 !important; background:#FFFFFF !important; border:1px solid var(--line-strong) !important; border-radius:12px !important; transform:none !important; box-shadow:0 1px 2px rgba(15,23,42,.035) !important; font-weight:750 !important; white-space:nowrap !important; vertical-align:middle !important; box-sizing:border-box !important; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button:hover { transform:none !important; color:#475467 !important; border-color:var(--line-strong) !important; background:#FFFFFF !important; }
+	.breadcrumb-current-text { width:100%; overflow:hidden; text-overflow:ellipsis; }
+	.breadcrumb-current-text p, .breadcrumb-sep-text p { margin:0 !important; padding:0 !important; line-height:34px !important; }
+	.breadcrumb-sep-text { display:inline-flex !important; align-items:center !important; justify-content:center !important; height:34px !important; min-height:34px !important; color:#667085 !important; font-weight:750 !important; font-size:14px !important; line-height:34px !important; text-align:center !important; padding:0 !important; margin:0 !important; vertical-align:middle !important; }
 
 /* 首页系列卡 */
 .series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:none; }
@@ -202,13 +205,24 @@ div[data-testid="stVerticalBlock"]:has(.side-panel) .stButton > button { color:#
 .cost-name { color:#475467; font-size:.72rem; font-weight:700; white-space:nowrap; }
 .cost-val { color:#101828; font-family:var(--mono) !important; font-size:.72rem; text-align:right; white-space:nowrap; }
 .cost-pct { color:#98A2B3; font-size:.66rem; text-align:right; white-space:nowrap; }
-.formula { padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; font-family:'Inter',var(--mono) !important; color:#475467; font-size:.72rem; font-weight:500; line-height:1.65; white-space:normal; }
+.formula { padding:12px; border:1px solid var(--line); border-radius:12px; background:#fff; color:#475467; font-size:.72rem; font-weight:500; line-height:1.65; white-space:normal; }
+.formula-title { color:#101828; font-size:.76rem; font-weight:850; margin-bottom:8px; }
+.formula-line { display:flex; justify-content:space-between; gap:12px; padding:6px 0; border-bottom:1px dashed #EAECF0; }
+.formula-line:last-child { border-bottom:0; }
+.formula-label { color:#667085; white-space:nowrap; }
+.formula-value { color:#101828; font-family:var(--mono) !important; font-weight:800; text-align:right; }
+.formula-eq { margin-top:8px; padding:10px; border-radius:10px; background:#F9FAFB; color:#344054; font-family:var(--mono) !important; font-size:.68rem; line-height:1.7; }
 div[data-testid="stExpander"]:has(.formula) { margin-top:10px !important; border:1px solid var(--line) !important; border-radius:14px !important; background:#fff !important; box-shadow:0 1px 2px rgba(15,23,42,.03) !important; }
 div[data-testid="stExpander"]:has(.formula) summary { font-size:.76rem !important; font-weight:850 !important; color:#475467 !important; }
 .tool-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); margin-top:18px; }
 .login-shell { max-width:420px; margin:12vh auto 1.5rem; padding:30px; border:1px solid var(--line); border-radius:22px; background:#fff; box-shadow:var(--shadow); }
 .login-title { font-size:1.2rem; font-weight:850; color:var(--text); margin-bottom:4px; }
 .login-sub { color:var(--muted); font-size:.82rem; line-height:1.65; }
+[data-baseweb="tag"] { background:#FFFFFF !important; background-color:#FFFFFF !important; color:#475467 !important; border:1px solid var(--line-strong) !important; border-radius:8px !important; box-shadow:0 1px 2px rgba(15,23,42,.03) !important; }
+[data-baseweb="tag"] > span,
+[data-baseweb="tag"] span { color:#475467 !important; font-weight:700 !important; }
+[data-baseweb="tag"] svg,
+[data-baseweb="tag"] path { color:#667085 !important; fill:#667085 !important; }
 [data-testid="stDataFrame"] * { font-family:var(--mono) !important; }
 @media (max-width: 1180px) { .main .block-container { padding-left:1rem !important; padding-right:1rem !important; } .quote-pane, .quote-card { min-width:300px; } .product-img-wrap { height:120px; } }
 @media (max-width: 980px) { .quote-pane { position:relative; top:auto; min-width:100%; } .spec-strip, .metric-grid { grid-template-columns:1fr; } .vc-header { padding:0 1rem; } }
@@ -743,9 +757,21 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
         val = float(quote.get(name, 0))
         pct = val / cost_total * 100
         cost_rows.append(f'<div class="cost-row"><div class="cost-dot" style="background:{cost_colors[name]};"></div><div class="cost-name">{name}</div><div class="cost-val">¥{val:.4f}</div><div class="cost-pct">{pct:.0f}%</div></div>')
-    formula = (
-        f"材料 {quote['net_g']}g × ¥{params['copper_price']:,.0f}/吨 → RMB ¥{quote['rmb']:.4f} → 外币 {symbol}{quote['fgn']:.4f}，有效汇率 {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']}"
-    )
+    packaging_label = " + ".join(map(str, st.session_state.packaging)) if st.session_state.packaging else "无包装附加费"
+    plating_rate = float(PLATING_RATES.get(st.session_state.plating, 0.0))
+    freight_rate = float(FREIGHT_RATES.get(st.session_state.destination, 0.0))
+    formula_html = f"""
+    <div class="formula">
+      <div class="formula-title">最终报价推导</div>
+      <div class="formula-line"><span class="formula-label">原材料</span><span class="formula-value">{quote['net_g']:.1f}g × ¥{params['copper_price']:,.0f}/吨 ÷ 1,000,000 = ¥{quote['原材料']:.4f}</span></div>
+      <div class="formula-line"><span class="formula-label">加工配件</span><span class="formula-value">¥{quote['加工配件']:.4f}</span></div>
+      <div class="formula-line"><span class="formula-label">电镀</span><span class="formula-value">{html.escape(str(st.session_state.plating))}，费率 ¥{plating_rate:,.0f}/吨 = ¥{quote['电镀']:.4f}</span></div>
+      <div class="formula-line"><span class="formula-label">包装</span><span class="formula-value">{html.escape(packaging_label)} = ¥{quote['包装']:.4f}</span></div>
+      <div class="formula-line"><span class="formula-label">运费</span><span class="formula-value">{html.escape(str(st.session_state.destination))}，¥{freight_rate:.2f}/CBM = ¥{quote['运费']:.4f}</span></div>
+      <div class="formula-line"><span class="formula-label">利润</span><span class="formula-value">¥{quote['利润']:.4f}</span></div>
+      <div class="formula-eq">人民币单价 = 原材料 + 加工配件 + 电镀 + 包装 + 运费 + 利润 = ¥{quote['rmb']:.4f}<br>有效汇率 = {params['exchange_rate']} × {EXCHANGE_RATE_MARGIN} = {quote['eff_rate']:.4f}<br>{params['currency']} 单价 = ¥{quote['rmb']:.4f} ÷ {quote['eff_rate']:.4f} = {symbol}{quote['fgn']:.4f}<br>订单总价 = {symbol}{quote['fgn']:.4f} × {int(st.session_state.quantity)} 只 = {symbol}{quote['total']:,.2f}</div>
+    </div>
+    """
     st.markdown(f"""
     <div class="quote-card">
       <div class="panel-kicker"><span>QUOTE SUMMARY</span><span>{params['currency']} / 只</span></div>
@@ -758,7 +784,7 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
     </div>
     """, unsafe_allow_html=True)
     with st.expander("计算公式", expanded=False):
-        st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
+        st.markdown(formula_html, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
