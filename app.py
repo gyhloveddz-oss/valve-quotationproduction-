@@ -101,6 +101,43 @@ html, body, .stApp, .main, button, input, textarea, select, label, p, div, span 
 	section[data-testid="stSidebar"] [data-testid="stFileUploader"] section { justify-content:center !important; align-items:center !important; text-align:center !important; }
 	section[data-testid="stSidebar"] [data-testid="stFileUploader"] button { margin-left:auto !important; margin-right:auto !important; }
 	section[data-testid="stSidebar"] .stButton > button { border-radius:10px !important; }
+
+	/* Sidebar rescue control: keep Streamlit native collapse / expand entry always above the custom fixed header. */
+	[data-testid="stSidebarCollapseButton"],
+	[data-testid="stSidebarCollapseButton"] button,
+	[data-testid="collapsedControl"],
+	[data-testid="collapsedControl"] button {
+		z-index:999999 !important;
+		position:fixed !important;
+		left:12px !important;
+		top:12px !important;
+		width:36px !important;
+		height:36px !important;
+		min-width:36px !important;
+		min-height:36px !important;
+		display:flex !important;
+		align-items:center !important;
+		justify-content:center !important;
+		background:#FFFFFF !important;
+		border:1px solid #E5E7EB !important;
+		border-radius:999px !important;
+		box-shadow:0 6px 18px rgba(15,23,42,.14) !important;
+		color:#111827 !important;
+		opacity:1 !important;
+		visibility:visible !important;
+		pointer-events:auto !important;
+	}
+	[data-testid="stSidebarCollapseButton"]:hover,
+	[data-testid="stSidebarCollapseButton"] button:hover,
+	[data-testid="collapsedControl"]:hover,
+	[data-testid="collapsedControl"] button:hover {
+		background:#F3F4F6 !important;
+		color:#4F46E5 !important;
+		transform:translateY(-1px) !important;
+	}
+	/* The custom top bar is informational; allow native controls underneath to receive clicks if their hit area overlaps. */
+	.vc-header { z-index:900 !important; pointer-events:none !important; }
+	.vc-header .vc-brand, .vc-header .vc-badges { pointer-events:auto !important; }
 hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 
 /* 固定顶部页眉 */
