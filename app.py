@@ -137,28 +137,27 @@ div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploa
 .page-title { font-size:1.15rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
 .page-sub { color:var(--muted); font-size:.8rem; line-height:1.65; margin-bottom:1rem; }
 .section-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); }
-	.breadcrumb-wrap { display:flex; align-items:center; gap:10px; margin:0 0 12px 0; padding:4px 0; font-size:16px !important; line-height:1; color:#667085; }
-	.crumb-link, .crumb-current, .crumb-sep { display:inline-flex; align-items:center; margin:0; padding:0; font-size:16px !important; line-height:1; white-space:nowrap; }
-	.crumb-link { color:#475467; font-weight:750; }
-	.crumb-sep { color:var(--subtle); }
-	.crumb-current { color:var(--purple); font-weight:850; }
-	.breadcrumb-current-text { color:var(--purple); font-weight:850; font-size:16px; line-height:38px; white-space:nowrap; }
-	.breadcrumb-sep-text { color:var(--subtle); font-weight:750; font-size:16px; line-height:38px; text-align:center; }
+	.breadcrumb-anchor { width:0; height:0; overflow:hidden; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) [data-testid="column"] { display:flex !important; align-items:center !important; min-height:38px !important; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton { margin:0 !important; width:100% !important; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button { height:34px !important; min-height:34px !important; padding:0 14px !important; margin:0 !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; line-height:34px !important; font-size:14px !important; color:#475467 !important; background:#FFFFFF !important; border:1px solid var(--line-strong) !important; border-radius:12px !important; transform:none !important; box-shadow:0 1px 2px rgba(15,23,42,.035) !important; }
+	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button:hover { transform:none !important; color:var(--purple) !important; border-color:#B8BDFD !important; background:#FBFAFF !important; }
+	.breadcrumb-current-text { display:flex; align-items:center; height:34px; color:var(--purple); font-weight:850; font-size:14px; line-height:34px; white-space:nowrap; padding:0; margin:0; }
+	.breadcrumb-sep-text { display:flex; align-items:center; justify-content:center; height:34px; color:var(--subtle); font-weight:750; font-size:14px; line-height:34px; text-align:center; padding:0; margin:0; }
 
 /* 首页系列卡 */
-.series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:all .16s ease; }
-.series-card:hover { border-color:#B8BDFD; box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:none; }
+.series-card:hover { border-color:var(--line); box-shadow:var(--shadow); transform:none; }
 .series-icon { width:44px; height:44px; border-radius:15px; display:flex; align-items:center; justify-content:center; background:var(--purple-soft); color:var(--purple); font-size:1.2rem; font-weight:900; }
 .series-title { font-size:1.15rem; font-weight:850; color:var(--text); }
 .series-desc { color:#475467; font-size:.84rem; line-height:1.6; max-width:300px; }
 .series-count { color:var(--text); font-size:.82rem; font-weight:800; }
-div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton, div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div[data-testid="stButton"] { height:0 !important; margin:0 !important; padding:0 !important; }
-div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > button, div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div[data-testid="stButton"] > button { height:210px !important; min-height:210px !important; width:100% !important; margin-top:-210px !important; opacity:.001 !important; cursor:pointer !important; position:relative !important; z-index:20 !important; }
+div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > button, div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div[data-testid="stButton"] > button { margin-top:10px !important; height:40px !important; min-height:40px !important; opacity:1 !important; position:relative !important; z-index:1 !important; }
 
 /* 产品卡网格 */
 .products-note { color:var(--muted); font-size:.78rem; margin-bottom:14px; }
-.product-card { min-height:212px; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:all .16s ease; overflow:hidden; }
-.product-card:hover { border-color:#B8BDFD; box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+.product-card { min-height:212px; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:none; overflow:hidden; }
+.product-card:hover { border-color:var(--line); box-shadow:var(--shadow); transform:none; }
 .product-card.selected { border:2px solid var(--purple); box-shadow:0 0 0 4px rgba(109,93,251,.10), var(--shadow-hover); }
 .product-img-wrap { height:148px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .product-img { width:100%; height:100%; object-fit:contain; display:block; }
@@ -203,7 +202,9 @@ div[data-testid="stVerticalBlock"]:has(.side-panel) .stButton > button { color:#
 .cost-name { color:#475467; font-size:.72rem; font-weight:700; white-space:nowrap; }
 .cost-val { color:#101828; font-family:var(--mono) !important; font-size:.72rem; text-align:right; white-space:nowrap; }
 .cost-pct { color:#98A2B3; font-size:.66rem; text-align:right; white-space:nowrap; }
-.formula { margin-top:10px; padding:8px 10px; border:1px solid var(--line); border-radius:12px; background:#fff; font-family:'Inter',var(--mono) !important; color:#475467; font-size:.66rem; font-weight:450; line-height:1.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.formula { padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; font-family:'Inter',var(--mono) !important; color:#475467; font-size:.72rem; font-weight:500; line-height:1.65; white-space:normal; }
+div[data-testid="stExpander"]:has(.formula) { margin-top:10px !important; border:1px solid var(--line) !important; border-radius:14px !important; background:#fff !important; box-shadow:0 1px 2px rgba(15,23,42,.03) !important; }
+div[data-testid="stExpander"]:has(.formula) summary { font-size:.76rem !important; font-weight:850 !important; color:#475467 !important; }
 .tool-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); margin-top:18px; }
 .login-shell { max-width:420px; margin:12vh auto 1.5rem; padding:30px; border:1px solid var(--line); border-radius:22px; background:#fff; box-shadow:var(--shadow); }
 .login-title { font-size:1.2rem; font-weight:850; color:var(--text); margin-bottom:4px; }
@@ -756,7 +757,8 @@ def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> Non
       {''.join(cost_rows)}
     </div>
     """, unsafe_allow_html=True)
-    st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
+    with st.expander("计算公式", expanded=False):
+        st.markdown(f'<div class="formula">{html.escape(formula)}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
