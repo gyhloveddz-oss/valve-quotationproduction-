@@ -137,14 +137,13 @@ div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploa
 .page-title { font-size:1.15rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
 .page-sub { color:var(--muted); font-size:.8rem; line-height:1.65; margin-bottom:1rem; }
 .section-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); }
-.breadcrumb-wrap { display:flex; align-items:center; gap:12px; margin:0 0 16px 0; padding:10px 0; font-size:16px !important; line-height:1; color:#667085; }
-.crumb-link, .crumb-current, .crumb-sep { display:inline-flex; align-items:center; margin:0; padding:0; font-size:16px !important; line-height:1; white-space:nowrap; }
-.crumb-link { color:#475467; font-weight:750; }
-.crumb-sep { color:var(--subtle); }
-.crumb-current { color:var(--purple); font-weight:850; }
-div[data-testid="stHorizontalBlock"]:has(.breadcrumb-click-row) { margin-top:-50px !important; height:42px !important; overflow:hidden !important; }
-div[data-testid="stMarkdownContainer"]:has(.breadcrumb-click-row) { display:none !important; }
-div[data-testid="stHorizontalBlock"]:has(.breadcrumb-click-row) .stButton > button { height:42px !important; min-height:42px !important; opacity:.001 !important; border:0 !important; box-shadow:none !important; background:transparent !important; cursor:pointer !important; }
+	.breadcrumb-wrap { display:flex; align-items:center; gap:10px; margin:0 0 12px 0; padding:4px 0; font-size:16px !important; line-height:1; color:#667085; }
+	.crumb-link, .crumb-current, .crumb-sep { display:inline-flex; align-items:center; margin:0; padding:0; font-size:16px !important; line-height:1; white-space:nowrap; }
+	.crumb-link { color:#475467; font-weight:750; }
+	.crumb-sep { color:var(--subtle); }
+	.crumb-current { color:var(--purple); font-weight:850; }
+	.breadcrumb-current-text { color:var(--purple); font-weight:850; font-size:16px; line-height:38px; white-space:nowrap; }
+	.breadcrumb-sep-text { color:var(--subtle); font-weight:750; font-size:16px; line-height:38px; text-align:center; }
 
 /* 首页系列卡 */
 .series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:all .16s ease; }
@@ -165,7 +164,11 @@ div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > 
 .product-img { width:100%; height:100%; object-fit:contain; display:block; }
 .product-name { margin-top:12px; color:var(--text); font-size:.94rem; font-weight:850; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
 .product-check { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:var(--purple); color:#fff; font-size:.72rem; font-weight:900; }
-div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margin-top:8px !important; height:38px !important; min-height:38px !important; font-size:.86rem !important; justify-content:center !important; }
+div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margin-top:10px !important; height:40px !important; min-height:40px !important; font-size:.86rem !important; justify-content:center !important; display:flex !important; align-items:center !important; color:#4F46E5 !important; background:#FFFFFF !important; border:1px solid #B8BDFD !important; border-radius:12px !important; font-weight:850 !important; opacity:1 !important; visibility:visible !important; box-shadow:0 1px 3px rgba(79,70,229,.10) !important; }
+
+div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button:hover { color:#FFFFFF !important; background:var(--purple) !important; border-color:var(--purple) !important; }
+
+div[data-testid="stVerticalBlock"]:has(.side-panel) .stButton > button { color:#475467 !important; background:#FFFFFF !important; border:1px solid var(--line-strong) !important; opacity:1 !important; visibility:visible !important; font-weight:800 !important; }
 
 /* 规格、控制、报价 */
 .spec-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:16px 0; }
@@ -519,7 +522,7 @@ def render_sidebar_controls() -> dict[str, Any]:
     st.markdown('<span class="sb-label">铜价（元/吨）</span>', unsafe_allow_html=True)
     copper_price = st.number_input("铜价", min_value=40000, max_value=150000, value=int(st.session_state.copper_price), step=100, label_visibility="collapsed")
     st.session_state.copper_price = copper_price
-    if st.button("同步实时铜价", key="sync_copper", use_container_width=True):
+    if st.button("更新铜价", key="sync_copper", use_container_width=True):
         with st.spinner("同步铜价中..."):
             result = cached_copper_price()
             st.session_state.copper_price = float(result.get("price", DEFAULT_COPPER_PRICE))
@@ -538,7 +541,7 @@ def render_sidebar_controls() -> dict[str, Any]:
     if currency != "RMB":
         effective_rate = round(exchange_rate * EXCHANGE_RATE_MARGIN, 4)
         st.markdown(f'<p class="sb-hint">报价汇率 = {exchange_rate} × {EXCHANGE_RATE_MARGIN} = <b>{effective_rate}</b></p>', unsafe_allow_html=True)
-    if st.button("同步实时汇率", key="sync_rates", use_container_width=True):
+    if st.button("更新汇率", key="sync_rates", use_container_width=True):
         with st.spinner("同步汇率中..."):
             st.session_state.rates = cached_exchange_rates()
         st.rerun()
@@ -595,30 +598,27 @@ def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
 
 
 def render_breadcrumb(product: pd.Series | None = None) -> None:
-    """单行 HTML 面包屑：字号、间距和基线完全一致；透明按钮保留状态机交互。"""
+    """渲染可点击面包屑，允许从产品页返回当前系列或所有系列。"""
     selected_cat = st.session_state.selected_cat
     product_label = html.escape(str(product["产品名称"])) if product is not None else "产品列表"
-    cat_label = html.escape(str(selected_cat)) + "系列" if selected_cat else "选择系列"
-    st.markdown(
-        f'<nav class="breadcrumb-wrap" aria-label="breadcrumb">'
-        f'<span class="crumb-link">所有系列</span>'
-        f'<span class="crumb-sep">/</span>'
-        f'<span class="crumb-link">{cat_label}</span>'
-        f'<span class="crumb-sep">/</span>'
-        f'<span class="crumb-current">{product_label}</span>'
-        f'</nav>',
-        unsafe_allow_html=True,
-    )
-    st.markdown('<div class="breadcrumb-click-row"></div>', unsafe_allow_html=True)
-    click_cols = st.columns([1.0, 1.0, 2.4, 5.0], gap="small")
-    with click_cols[0]:
+    cat_label = f"{selected_cat}系列" if selected_cat else "选择系列"
+
+    st.markdown('<div class="breadcrumb-anchor"></div>', unsafe_allow_html=True)
+    crumb_cols = st.columns([0.90, 0.08, 0.95, 0.08, 2.20, 5.00], gap="small")
+    with crumb_cols[0]:
         if st.button("所有系列", key="crumb_all_click", use_container_width=True):
             reset_to_home()
-    with click_cols[1]:
-        if st.button("当前系列", key="crumb_cat_click", use_container_width=True, disabled=not bool(selected_cat)):
+    with crumb_cols[1]:
+        st.markdown('<div class="breadcrumb-sep-text">/</div>', unsafe_allow_html=True)
+    with crumb_cols[2]:
+        if st.button(cat_label, key="crumb_cat_click", use_container_width=True, disabled=not bool(selected_cat)):
             st.session_state.page = "collection"
             st.session_state.selected_prod = None
             st.rerun()
+    with crumb_cols[3]:
+        st.markdown('<div class="breadcrumb-sep-text">/</div>', unsafe_allow_html=True)
+    with crumb_cols[4]:
+        st.markdown(f'<div class="breadcrumb-current-text">{product_label}</div>', unsafe_allow_html=True)
 
 
 def product_image_src(product_row: pd.Series) -> str:
