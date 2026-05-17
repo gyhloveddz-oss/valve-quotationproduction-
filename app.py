@@ -16,6 +16,7 @@ import html
 import io
 import re
 from datetime import datetime
+from urllib.parse import quote
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -111,6 +112,11 @@ hr { border-color:var(--line) !important; margin:1rem 0 !important; }
 .left-pane, .workbench-pane, .quote-pane { width:100%; max-width:100%; min-width:0; }
 .workbench-pane { padding:0 .4rem; overflow:visible; }
 .quote-pane { min-width:330px; position:sticky; top:74px; align-self:flex-start; }
+
+/* 固定左右辅助栏的列级锚点，避免选择产品后因中间栏高度变化或页面滚动产生错位 */
+div[data-testid="stVerticalBlock"]:has(.left-pane),
+div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { position:sticky !important; top:74px !important; align-self:flex-start !important; }
+div[data-testid="stVerticalBlock"]:has(.quote-column-marker) { z-index:2; }
 div[data-testid="stHorizontalBlock"] { align-items:flex-start !important; }
 
 /* 基础控件：绝不禁用 pointer-events，确保数量输入可手动编辑 */
@@ -137,16 +143,11 @@ div[data-testid="stVerticalBlock"]:has(.upload-center) [data-testid="stFileUploa
 .page-title { font-size:1.15rem; font-weight:850; color:var(--text); letter-spacing:-.025em; margin:.15rem 0 .35rem; }
 .page-sub { color:var(--muted); font-size:.8rem; line-height:1.65; margin-bottom:1rem; }
 .section-card { background:#fff; border:1px solid var(--line); border-radius:22px; padding:18px; box-shadow:var(--shadow); }
-	.breadcrumb-anchor { width:0; height:0; overflow:hidden; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) [data-testid="stHorizontalBlock"] { align-items:center !important; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) [data-testid="column"] { display:flex !important; align-items:center !important; min-height:36px !important; padding-top:0 !important; padding-bottom:0 !important; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton { margin:0 !important; width:100% !important; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button,
-	.breadcrumb-current-text { height:34px !important; min-height:34px !important; padding:0 14px !important; margin:0 !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; line-height:34px !important; font-size:14px !important; color:#475467 !important; background:#FFFFFF !important; border:1px solid var(--line-strong) !important; border-radius:12px !important; transform:none !important; box-shadow:0 1px 2px rgba(15,23,42,.035) !important; font-weight:750 !important; white-space:nowrap !important; vertical-align:middle !important; box-sizing:border-box !important; }
-	div[data-testid="stVerticalBlock"]:has(.breadcrumb-anchor) .stButton > button:hover { transform:none !important; color:#475467 !important; border-color:var(--line-strong) !important; background:#FFFFFF !important; }
-	.breadcrumb-current-text { width:100%; overflow:hidden; text-overflow:ellipsis; }
-	.breadcrumb-current-text p, .breadcrumb-sep-text p { margin:0 !important; padding:0 !important; line-height:34px !important; }
-	.breadcrumb-sep-text { display:inline-flex !important; align-items:center !important; justify-content:center !important; height:34px !important; min-height:34px !important; color:#667085 !important; font-weight:750 !important; font-size:14px !important; line-height:34px !important; text-align:center !important; padding:0 !important; margin:0 !important; vertical-align:middle !important; }
+	.breadcrumb-row { display:flex; align-items:center; gap:12px; height:36px; margin:0 0 10px 0; flex-wrap:nowrap; }
+	.breadcrumb-chip { height:34px; min-height:34px; padding:0 18px; display:inline-flex; align-items:center; justify-content:center; line-height:34px; font-size:14px; color:#475467; background:#FFFFFF; border:1px solid var(--line-strong); border-radius:12px; box-shadow:0 1px 2px rgba(15,23,42,.035); font-weight:750; white-space:nowrap; vertical-align:middle; box-sizing:border-box; text-decoration:none !important; min-width:88px; }
+	.breadcrumb-chip:hover { color:#475467; border-color:var(--line-strong); background:#FFFFFF; text-decoration:none !important; transform:none; }
+	.breadcrumb-chip.current { min-width:220px; max-width:280px; overflow:hidden; text-overflow:ellipsis; cursor:default; }
+	.breadcrumb-sep { height:34px; min-height:34px; display:inline-flex; align-items:center; justify-content:center; color:#667085; font-weight:750; font-size:14px; line-height:34px; padding:0; margin:0; }
 
 /* 首页系列卡 */
 .series-card { min-height:210px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:var(--shadow); transition:none; }
@@ -159,14 +160,14 @@ div[data-testid="stMarkdownContainer"]:has(.series-hit-marker) + div.stButton > 
 
 /* 产品卡网格 */
 .products-note { color:var(--muted); font-size:.78rem; margin-bottom:14px; }
-.product-card { min-height:212px; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:none; overflow:hidden; }
+.product-card { height:212px; min-height:212px; box-sizing:border-box; background:#fff; border:1px solid var(--line); border-radius:20px; padding:14px; box-shadow:var(--shadow); transition:none; overflow:hidden; display:flex; flex-direction:column; }
 .product-card:hover { border-color:var(--line); box-shadow:var(--shadow); transform:none; }
 .product-card.selected { border:2px solid var(--purple); box-shadow:0 0 0 4px rgba(109,93,251,.10), var(--shadow-hover); }
-.product-img-wrap { height:148px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.product-img-wrap { height:148px; min-height:148px; border-radius:16px; background:linear-gradient(135deg,#F7F8FB,#FFFFFF); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
 .product-img { width:100%; height:100%; object-fit:contain; display:block; }
-.product-name { margin-top:12px; color:var(--text); font-size:.94rem; font-weight:850; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center; }
+.product-name { margin-top:10px; color:var(--text); font-size:.94rem; font-weight:850; line-height:1.25; height:32px; min-height:32px; display:flex; align-items:center; justify-content:center; white-space:normal; overflow:hidden; text-align:center; }
 .product-check { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:var(--purple); color:#fff; font-size:.72rem; font-weight:900; }
-div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margin-top:10px !important; height:40px !important; min-height:40px !important; font-size:.86rem !important; justify-content:center !important; display:flex !important; align-items:center !important; color:#4F46E5 !important; background:#FFFFFF !important; border:1px solid #B8BDFD !important; border-radius:12px !important; font-weight:850 !important; opacity:1 !important; visibility:visible !important; box-shadow:0 1px 3px rgba(79,70,229,.10) !important; }
+div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button { margin-top:8px !important; height:40px !important; min-height:40px !important; font-size:.86rem !important; justify-content:center !important; display:flex !important; align-items:center !important; color:#4F46E5 !important; background:#FFFFFF !important; border:1px solid #B8BDFD !important; border-radius:12px !important; font-weight:850 !important; opacity:1 !important; visibility:visible !important; box-shadow:0 1px 3px rgba(79,70,229,.10) !important; }
 
 div[data-testid="stVerticalBlock"]:has(.product-card) .stButton > button:hover { color:#FFFFFF !important; background:var(--purple) !important; border-color:var(--purple) !important; }
 
@@ -613,27 +614,21 @@ def render_header(df: pd.DataFrame, params: dict[str, Any]) -> None:
 
 
 def render_breadcrumb(product: pd.Series | None = None) -> None:
-    """渲染可点击面包屑，允许从产品页返回当前系列或所有系列。"""
+    """渲染三段式面包屑，三段使用同一种胶囊样式并保持同一基线。"""
     selected_cat = st.session_state.selected_cat
     product_label = html.escape(str(product["产品名称"])) if product is not None else "产品列表"
     cat_label = f"{selected_cat}系列" if selected_cat else "选择系列"
-
-    st.markdown('<div class="breadcrumb-anchor"></div>', unsafe_allow_html=True)
-    crumb_cols = st.columns([0.90, 0.08, 0.95, 0.08, 2.20, 5.00], gap="small")
-    with crumb_cols[0]:
-        if st.button("所有系列", key="crumb_all_click", use_container_width=True):
-            reset_to_home()
-    with crumb_cols[1]:
-        st.markdown('<div class="breadcrumb-sep-text">/</div>', unsafe_allow_html=True)
-    with crumb_cols[2]:
-        if st.button(cat_label, key="crumb_cat_click", use_container_width=True, disabled=not bool(selected_cat)):
-            st.session_state.page = "collection"
-            st.session_state.selected_prod = None
-            st.rerun()
-    with crumb_cols[3]:
-        st.markdown('<div class="breadcrumb-sep-text">/</div>', unsafe_allow_html=True)
-    with crumb_cols[4]:
-        st.markdown(f'<div class="breadcrumb-current-text">{product_label}</div>', unsafe_allow_html=True)
+    cat_param = quote(str(selected_cat or ""))
+    cat_href = f"?nav=cat&cat={cat_param}" if selected_cat else "#"
+    st.markdown(f"""
+    <div class="breadcrumb-row">
+      <a class="breadcrumb-chip" href="?nav=all" target="_self">所有系列</a>
+      <span class="breadcrumb-sep">/</span>
+      <a class="breadcrumb-chip" href="{cat_href}" target="_self">{html.escape(cat_label)}</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-chip current">{product_label}</span>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 def product_image_src(product_row: pd.Series) -> str:
@@ -689,6 +684,25 @@ def get_selected_product(df: pd.DataFrame) -> pd.Series | None:
     return matched.iloc[0]
 
 
+def handle_breadcrumb_query(df: pd.DataFrame) -> None:
+    """消费面包屑 URL 参数，让 HTML 胶囊导航保持可点击。"""
+    nav = st.query_params.get("nav", None)
+    if not nav:
+        return
+    if nav == "all":
+        st.session_state.page = "home"
+        st.session_state.selected_cat = None
+        st.session_state.selected_prod = None
+    elif nav == "cat":
+        cat = st.query_params.get("cat", st.session_state.selected_cat or "")
+        valid_categories = set(df["系列"].dropna().astype(str).unique())
+        if cat in valid_categories:
+            st.session_state.page = "collection"
+            st.session_state.selected_cat = cat
+            st.session_state.selected_prod = None
+    st.query_params.clear()
+
+
 def render_product_grid(df: pd.DataFrame) -> None:
     selected_cat = st.session_state.selected_cat
     cat_df = df[df["系列"].astype(str) == str(selected_cat)].reset_index(drop=True) if selected_cat else df.reset_index(drop=True)
@@ -696,21 +710,25 @@ def render_product_grid(df: pd.DataFrame) -> None:
     if cat_df.empty:
         st.markdown('<div class="products-note">暂无产品数据。</div>', unsafe_allow_html=True)
         return
-    grid_cols = st.columns(4 if len(cat_df) >= 4 else max(1, len(cat_df)), gap="large")
-    for idx, (_, product) in enumerate(cat_df.iterrows()):
-        selected = str(st.session_state.selected_prod) == str(product["产品名称"])
-        img_src = product_image_src(product)
-        with grid_cols[idx % len(grid_cols)]:
-            check = '<div class="product-check">✓</div>' if selected else ''
-            st.markdown(f"""
-            <div class="product-card {'selected' if selected else ''}" style="position:relative;">
-              {check}
-              <div class="product-img-wrap"><img class="product-img" src="{img_src}" alt="{html.escape(str(product['产品名称']))}" /></div>
-              <div class="product-name">{html.escape(str(product['产品名称']))}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button("选择", key=f"prod_select_{selected_cat}_{idx}_{product['产品名称']}", use_container_width=True):
-                open_product(str(product["系列"]), str(product["产品名称"]))
+    cols_per_row = 4 if len(cat_df) >= 4 else max(1, len(cat_df))
+    for row_start in range(0, len(cat_df), cols_per_row):
+        row_cols = st.columns(cols_per_row, gap="large")
+        row_df = cat_df.iloc[row_start:row_start + cols_per_row]
+        for offset, (_, product) in enumerate(row_df.iterrows()):
+            idx = row_start + offset
+            selected = str(st.session_state.selected_prod) == str(product["产品名称"])
+            img_src = product_image_src(product)
+            with row_cols[offset]:
+                check = '<div class="product-check">✓</div>' if selected else ''
+                st.markdown(f"""
+                <div class="product-card {'selected' if selected else ''}" style="position:relative;">
+                  {check}
+                  <div class="product-img-wrap"><img class="product-img" src="{img_src}" alt="{html.escape(str(product['产品名称']))}" /></div>
+                  <div class="product-name">{html.escape(str(product['产品名称']))}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("选择", key=f"prod_select_{selected_cat}_{idx}_{product['产品名称']}", use_container_width=True):
+                    open_product(str(product["系列"]), str(product["产品名称"]))
 
 
 def render_product_specs(product: pd.Series) -> None:
@@ -741,7 +759,7 @@ def render_quote_controls() -> None:
 
 
 def render_quote_panel(product: pd.Series | None, params: dict[str, Any]) -> None:
-    st.markdown('<div class="quote-pane">', unsafe_allow_html=True)
+    st.markdown('<div class="quote-column-marker"></div><div class="quote-pane">', unsafe_allow_html=True)
     if product is None:
         st.markdown("""<div class="quote-card empty-quote"><div><div class="empty-icon">◆</div><div class="panel-product">开始报价</div><div style="color:#667085;font-size:.78rem;">先选择产品系列，然后选择具体产品。</div></div></div>""", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -852,6 +870,8 @@ def main() -> None:
     except Exception as exc:
         st.error(f"产品数据库加载失败：{exc}")
         st.stop()
+    ensure_valid_selection(products_df)
+    handle_breadcrumb_query(products_df)
     ensure_valid_selection(products_df)
     header_params = {"copper_price": st.session_state.copper_price, "currency": st.session_state.currency, "exchange_rate": st.session_state.exchange_rate}
     render_header(products_df, header_params)
